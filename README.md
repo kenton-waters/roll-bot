@@ -36,6 +36,12 @@ npm start
 
 This runs the "start" script defined in packages.json.
 
+## Run the tests:
+
+```
+npm test
+```
+
 ## Linting:
 
 Run ESLint to fix linting errors like so:

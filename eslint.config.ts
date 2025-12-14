@@ -15,7 +15,7 @@ export default defineConfig(
   {
     languageOptions: {
       parserOptions: {
-        project: ["tsconfig.json", "tsconfig.eslint.json"],
+        project: ["tsconfig.json", "tsconfig.no-emit.json"],
       },
     },
   },
