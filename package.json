@@ -1,7 +1,7 @@
 {
-  "name": "template",
+  "name": "roll-bot",
   "version": "1.0.0",
-  "description": "A template for TypeScript projects with Node.js.",
+  "description": "A Discord bot that calculates dice rolls for tabletop gaming. Written in TypeScript; runs on Node.js.",
   "main": "index.js",
   "scripts": {
     "start": "tsx src/app.ts",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kenton-waters/node-template.git"
+    "url": "git+https://github.com/kenton-waters/roll-bot.git"
   },
   "lint-staged": {
     "*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}": [
@@ -25,9 +25,9 @@
   "license": "ISC",
   "type": "module",
   "bugs": {
-    "url": "https://github.com/kenton-waters/node-template/issues"
+    "url": "https://github.com/kenton-waters/roll-bot/issues"
   },
-  "homepage": "https://github.com/kenton-waters/node-template#readme",
+  "homepage": "https://github.com/kenton-waters/roll-bot#readme",
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/node": "^25.0.2",
