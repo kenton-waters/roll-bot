@@ -75,3 +75,7 @@ Check formatting without fixing (good for CI):
 ```
 npx prettier --cache --check .
 ```
+
+## Environment variables:
+
+Consult example.env to see how to structure your top-level .env file.
