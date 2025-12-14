@@ -1,8 +1,14 @@
-# node-template
+# roll-bot
 
-A template for TypeScript projects with Node.js.
+A Discord bot that calculates dice rolls for tabletop gaming. Written in TypeScript; runs on Node.js.
 
-## Run the project
+## Install dependencies:
+
+```
+npm install
+```
+
+## Run the project:
 
 Compile the project like so:
 
