@@ -14,6 +14,12 @@ export const loginAsDiscordBot = (
     logger.log(`Ready! Logged in as ${readyClient.user.tag}`);
   });
 
+  discordClient.on(Events.MessageCreate, (message) => {
+    if (message.author.bot) return;
+    logger.log(`[login] Handling message: ${JSON.stringify(message)}`);
+    void message.reply(message.content);
+  });
+
   // Log in to Discord with your client's token
   return discordClient.login(discordToken);
 };
