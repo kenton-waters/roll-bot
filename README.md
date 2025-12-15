@@ -19,11 +19,11 @@ npx tsc
 Run the project like so:
 
 ```
-node dist/app.js
+node --env-file=.env dist/app.js
 ```
 
 ```
-npx tsc && node dist/app.js
+npx tsc && node --env-file=.env dist/app.js
 ```
 
 ### For development:
