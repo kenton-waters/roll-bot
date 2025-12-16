@@ -16,7 +16,7 @@ export const startBot = (
 
   discordClient.on(Events.MessageCreate, (message) => {
     const result = handleMessage(logger, {
-      authorIsBot: message.author.bot,
+      isAuthorBot: message.author.bot,
       content: message.content,
     });
     if (result.tag === "reply") {

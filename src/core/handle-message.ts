@@ -6,7 +6,7 @@ export const handleMessage = (
   logger: Logger,
   message: DiscordMessage,
 ): HandleMessageResult => {
-  if (message.authorIsBot) {
+  if (message.isAuthorBot) {
     return { tag: "doNotReply" };
   }
 
