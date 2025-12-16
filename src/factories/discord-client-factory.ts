@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits } from "discord.js";
-import type DiscordClient from "../models/discord-client.js";
+import type { DiscordClient } from "../models/discord.js";
 
 const getDiscordClient: () => DiscordClient = () =>
   new Client({
