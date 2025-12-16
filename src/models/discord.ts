@@ -1,8 +1,8 @@
-import type { Client, Message, OmitPartialGroupDMChannel } from "discord.js";
+import type { Client } from "discord.js";
 
 export type DiscordClient = Pick<Client, "on" | "once" | "login">;
 
-export type DiscordMessage = Pick<
-  OmitPartialGroupDMChannel<Message>,
-  "author" | "content" | "reply"
->;
+export interface DiscordMessage {
+  authorIsBot: boolean;
+  content: string;
+}

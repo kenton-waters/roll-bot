@@ -1,16 +1,30 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { message } from "../../src/constants/message.js";
+import Logger from "../../src/models/logger.js";
+import { DiscordMessage } from "../../src/models/discord.js";
+import { handleMessage } from "../../src/core/handle-message.js";
 
 void describe("handleMessage", () => {
-  void test("id function", () => {
+  void test("message from bot; do not reply", () => {
     // Arrange
-    const id = <T>(input: T) => input;
+    const mockLogger: Logger = {
+      log: function (): void {
+        /* empty */
+      },
+      error: function (): void {
+        /* empty */
+      },
+    };
+
+    const message: DiscordMessage = {
+      authorIsBot: true,
+      content: "blah",
+    };
 
     // Act
-    const result = id(message);
+    const result = handleMessage(mockLogger, message);
 
     // Assert
-    assert.strictEqual(result, "Hello, Node.js with TypeScript!");
+    assert.strictEqual(result.tag, "doNotReply");
   });
 });
