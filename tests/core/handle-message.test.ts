@@ -21,4 +21,22 @@ void describe("handleMessage", () => {
     // Assert
     assert.strictEqual(handleMessageResult.tag, "doNotReply");
   });
+
+  void test("message not from bot; echo content", () => {
+    // Arrange
+    const message: DiscordMessage = {
+      isAuthorBot: false,
+      content: "blah",
+    };
+
+    // Act
+    const handleMessageResult = handleMessage({
+      message: message,
+      deps: { logger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(handleMessageResult.tag, "reply");
+    assert.strictEqual(handleMessageResult.data, "blah");
+  });
 });

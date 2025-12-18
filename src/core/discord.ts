@@ -3,11 +3,19 @@ import type Logger from "../models/logger.js";
 import type { DiscordClient } from "../models/discord.js";
 import { handleMessage } from "./handle-message.js";
 
-export const startBot = (
-  logger: Logger,
-  discordClient: DiscordClient,
-  discordToken: string,
-) => {
+interface StartBotParams {
+  discordClient: DiscordClient;
+  discordToken: string;
+  deps: {
+    handleMessage: typeof handleMessage;
+    logger: Logger;
+  };
+}
+export const startBot = async ({
+  discordClient,
+  discordToken,
+  deps: { handleMessage, logger },
+}: StartBotParams): Promise<void> => {
   logger.log("[discord] Executing startBot...");
 
   discordClient.once(Events.ClientReady, (readyClient) => {
@@ -23,7 +31,6 @@ export const startBot = (
           channelName:
             "name" in message.channel ? message.channel.name : undefined,
           channelId: message.channelId,
-          authorGlobalName: message.author.globalName,
           authorTag: message.author.tag,
           authorId: message.author.id,
           messageContent: message.content,
@@ -50,5 +57,5 @@ export const startBot = (
     void message.reply(result.data);
   });
 
-  return discordClient.login(discordToken);
+  await discordClient.login(discordToken);
 };
