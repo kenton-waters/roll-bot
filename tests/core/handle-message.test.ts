@@ -13,7 +13,10 @@ void describe("handleMessage", () => {
     };
 
     // Act
-    const handleMessageResult = handleMessage(nullLogger, message);
+    const handleMessageResult = handleMessage({
+      message: message,
+      deps: { logger: nullLogger },
+    });
 
     // Assert
     assert.strictEqual(handleMessageResult.tag, "doNotReply");

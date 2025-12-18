@@ -33,9 +33,12 @@ export const startBot = (
       )}`,
     );
 
-    const result = handleMessage(logger, {
-      isAuthorBot: message.author.bot,
-      content: message.content,
+    const result = handleMessage({
+      message: {
+        isAuthorBot: message.author.bot,
+        content: message.content,
+      },
+      deps: { logger: logger },
     });
 
     if (result.tag === "doNotReply") {
