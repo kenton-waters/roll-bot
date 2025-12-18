@@ -19,11 +19,11 @@ npx tsc
 Run the project like so:
 
 ```
-node dist/app.js
+node --env-file=.env dist/app.js
 ```
 
 ```
-npx tsc && node dist/app.js
+npx tsc && node --env-file=.env dist/app.js
 ```
 
 ### For development:
@@ -75,3 +75,7 @@ Check formatting without fixing (good for CI):
 ```
 npx prettier --cache --check .
 ```
+
+## Environment variables:
+
+Consult example.env to see how to structure your top-level .env file.
