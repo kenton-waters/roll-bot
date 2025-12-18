@@ -6,11 +6,16 @@ export const handleMessage = (
   logger: Logger,
   message: DiscordMessage,
 ): HandleMessageResult => {
+  logger.log("[handle-message] Handling message:", message);
   if (message.isAuthorBot) {
+    logger.log("[handle-message] Message author is a bot. Do not reply.");
     return { tag: "doNotReply" };
   }
 
-  logger.log(`[login] Handling message: ${JSON.stringify(message)}`);
+  logger.log(
+    "[handle-message] Message is from a human. Echo content:",
+    message.content,
+  );
   return {
     tag: "reply",
     data: message.content,
