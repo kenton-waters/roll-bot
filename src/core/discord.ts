@@ -4,11 +4,11 @@ import type { DiscordClient } from "../models/discord.js";
 import { handleMessage } from "./handle-message.js";
 
 interface StartBotParams {
-  discordClient: DiscordClient;
-  discordToken: string;
-  deps: {
-    handleMessage: typeof handleMessage;
-    logger: Logger;
+  readonly discordClient: DiscordClient;
+  readonly discordToken: string;
+  readonly deps: {
+    readonly handleMessage: typeof handleMessage;
+    readonly logger: Logger;
   };
 }
 export const startBot = async ({
@@ -16,16 +16,16 @@ export const startBot = async ({
   discordToken,
   deps: { handleMessage, logger },
 }: StartBotParams): Promise<void> => {
-  logger.log("[discord] Executing startBot...");
+  logger.info("[discord] Executing startBot...");
 
   discordClient.once(Events.ClientReady, (readyClient) => {
-    logger.log(
+    logger.info(
       `[discord] roll-bot is ready! Logged in as ${readyClient.user.tag}`,
     );
   });
 
   discordClient.on(Events.MessageCreate, (message) => {
-    logger.log(
+    logger.info(
       `[discord] Message created: ${JSON.stringify(
         {
           channelName:
@@ -49,11 +49,11 @@ export const startBot = async ({
     });
 
     if (result.tag === "doNotReply") {
-      logger.log("[discord] Not replying to message");
+      logger.info("[discord] Not replying to message");
       return;
     }
 
-    logger.log(`[discord] Replying with: ${result.data}`);
+    logger.info(`[discord] Replying with: ${result.data}`);
     void message.reply(result.data);
   });
 

@@ -1,12 +1,13 @@
 import { DISCORD_TOKEN } from "./constants/environment-variables.js";
 import type Logger from "./models/logger.js";
 import { startBot } from "./core/discord.js";
-import getDiscordClient from "./factories/discord-client-factory.js";
+import createDiscordClient from "./factories/discord-client-factory.js";
 import { handleMessage } from "./core/handle-message.js";
+import createLogger from "./factories/logger-factory.js";
 
-const logger: Logger = console;
+const logger: Logger = createLogger(console);
 
-logger.log("[app] Executing roll-bot...");
+logger.info("[app] Executing roll-bot...");
 
 if (DISCORD_TOKEN === undefined) {
   logger.error(
@@ -16,7 +17,7 @@ if (DISCORD_TOKEN === undefined) {
 }
 
 await startBot({
-  discordClient: getDiscordClient(),
+  discordClient: createDiscordClient(),
   discordToken: DISCORD_TOKEN,
   deps: {
     handleMessage: handleMessage,

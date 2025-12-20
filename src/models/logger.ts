@@ -1,3 +1,10 @@
-type Logger = Pick<Console, "log" | "error">;
+export type BasicLogger = Pick<Console, "info" | "error">;
 
-export type { Logger as default };
+export interface CloneParams {
+  readonly contextToAdd: unknown;
+  readonly toLog: string;
+}
+
+export default interface Logger extends BasicLogger {
+  readonly clone: ({ contextToAdd, toLog }: CloneParams) => Logger;
+}
