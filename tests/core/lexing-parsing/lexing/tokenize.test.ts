@@ -35,4 +35,22 @@ void describe("tokenize", () => {
     assert.strictEqual(tokenizeResult.tag, "success");
     assert.strictEqual(tokenizeResult.data.length, 0);
   });
+
+  void test("integer input; success; one integer token", () => {
+    // Arrange
+    const inputString = "0012342500";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.data.length, 1);
+    assert.strictEqual(tokenizeResult.data[0].tag, "integer");
+    assert.strictEqual(tokenizeResult.data[0].data.numericValue, 12342500);
+    assert.strictEqual(tokenizeResult.data[0].data.stringToken, "0012342500");
+  });
 });
