@@ -37,8 +37,11 @@ const tokenize = ({
     return {
       tag: "unexpectedCharacter",
       data: {
-        character: inputString[0] ?? "undefined",
-        position: 0,
+        character: remainingInput[0] ?? "undefined",
+        position: pastTokens.reduce(
+          (acc, curr) => acc + curr.data.stringToken.length,
+          0,
+        ),
       },
     };
   };

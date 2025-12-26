@@ -53,4 +53,20 @@ void describe("tokenize", () => {
     assert.strictEqual(tokenizeResult.data[0].data.numericValue, 12342500);
     assert.strictEqual(tokenizeResult.data[0].data.stringToken, "0012342500");
   });
+
+  void test("unexpectedCharacter; at position 5", () => {
+    // Arrange
+    const inputString = "01234x6789";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.tag, "unexpectedCharacter");
+    assert.strictEqual(tokenizeResult.data.character, "x");
+    assert.strictEqual(tokenizeResult.data.position, 5);
+  });
 });
