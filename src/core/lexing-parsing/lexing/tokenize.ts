@@ -1,3 +1,4 @@
+import type Token from "../../../models/lexing-parsing/lexing/token.js";
 import type Logger from "../../../models/logger.js";
 import type TokenizeResult from "../../../models/results/tokenize-result.js";
 
@@ -12,13 +13,20 @@ const tokenize = ({
   deps: { prevLogger },
 }: TokenizeParams): TokenizeResult => {
   prevLogger.logWithNew("tokenize", "Tokenizing input string:", inputString);
-  return {
-    tag: "unexpectedCharacter",
-    data: {
-      character: inputString[0] ?? "",
-      position: 0,
-    },
+
+  const go = (remainingInput: string, pastTokens: Token[]): TokenizeResult => {
+    if (remainingInput.length === 0)
+      return { tag: "success", data: pastTokens };
+
+    return {
+      tag: "unexpectedCharacter",
+      data: {
+        character: inputString[0] ?? "undefined",
+        position: 0,
+      },
+    };
   };
+  return go(inputString, []);
 };
 
 export default tokenize;

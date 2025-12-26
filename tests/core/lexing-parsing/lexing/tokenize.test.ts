@@ -20,4 +20,19 @@ void describe("tokenize", () => {
     assert.strictEqual(tokenizeResult.data.character, "x");
     assert.strictEqual(tokenizeResult.data.position, 0);
   });
+
+  void test("empty input; success; empty tokens array", () => {
+    // Arrange
+    const inputString = "";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.data.length, 0);
+  });
 });
