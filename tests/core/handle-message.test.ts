@@ -7,12 +7,13 @@ void describe("handleMessage", () => {
   void test("message from bot; do not reply", () => {
     // Arrange
     const message = {
-      isAuthorBot: true,
+      authorUserId: "botId",
       content: "blah",
     };
 
     // Act
     const handleMessageResult = handleMessage({
+      rollBotUserId: "botId",
       message: message,
       deps: { prevLogger: nullLogger },
     });
@@ -24,12 +25,13 @@ void describe("handleMessage", () => {
   void test("message not from bot; echo content", () => {
     // Arrange
     const message = {
-      isAuthorBot: false,
+      authorUserId: "authorId",
       content: "blah",
     };
 
     // Act
     const handleMessageResult = handleMessage({
+      rollBotUserId: "botId",
       message: message,
       deps: { prevLogger: nullLogger },
     });

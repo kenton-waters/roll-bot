@@ -42,8 +42,9 @@ export const startBot = async ({
     );
 
     const result = handleMessage({
+      rollBotUserId: discordClient.user?.id,
       message: {
-        isAuthorBot: message.author.bot,
+        authorUserId: message.author.id,
         content: message.content,
       },
       deps: { prevLogger: messageLogger },
