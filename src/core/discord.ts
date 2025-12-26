@@ -43,11 +43,11 @@ export const startBot = async ({
         isAuthorBot: message.author.bot,
         content: message.content,
       },
-      deps: { logger: messageLogger },
+      deps: { prevLogger: messageLogger },
     });
 
     if (result.tag === "doNotReply") {
-      messageLogger.info("Not replying to message");
+      messageLogger.info("Not replying to message.");
       return;
     }
 

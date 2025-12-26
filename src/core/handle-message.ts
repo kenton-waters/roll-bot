@@ -1,27 +1,30 @@
-import type { DiscordMessage } from "../models/discord.js";
 import type Logger from "../models/logger.js";
 import type HandleMessageResult from "../models/results/handle-message-result.js";
 
 interface HandleMessageParams {
-  readonly message: DiscordMessage;
+  readonly message: {
+    readonly isAuthorBot: boolean;
+    readonly content: string;
+  };
   readonly deps: {
-    readonly logger: Logger;
+    readonly prevLogger: Logger;
   };
 }
 export const handleMessage = ({
   message,
-  deps: { logger },
+  deps: { prevLogger },
 }: HandleMessageParams): HandleMessageResult => {
-  logger.info("[handle-message] Handling message:", message);
+  const logger = prevLogger.clone(
+    "handle-message",
+    "Handling message:",
+    message,
+  );
   if (message.isAuthorBot) {
-    logger.info("[handle-message] Message author is a bot. Do not reply.");
+    logger.info("Message author is a bot. Do not reply.");
     return { tag: "doNotReply" };
   }
 
-  logger.info(
-    "[handle-message] Message is from a human. Echo content:",
-    message.content,
-  );
+  logger.info("Message is from a human. Echo content:", message.content);
   return {
     tag: "reply",
     data: message.content,

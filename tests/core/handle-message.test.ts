@@ -15,7 +15,7 @@ void describe("handleMessage", () => {
     // Act
     const handleMessageResult = handleMessage({
       message: message,
-      deps: { logger: nullLogger },
+      deps: { prevLogger: nullLogger },
     });
 
     // Assert
@@ -32,7 +32,7 @@ void describe("handleMessage", () => {
     // Act
     const handleMessageResult = handleMessage({
       message: message,
-      deps: { logger: nullLogger },
+      deps: { prevLogger: nullLogger },
     });
 
     // Assert
