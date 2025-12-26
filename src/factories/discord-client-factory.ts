@@ -1,7 +1,6 @@
 import { Client, GatewayIntentBits } from "discord.js";
-import type { DiscordClient } from "../models/discord.js";
 
-const createDiscordClient: () => DiscordClient = () =>
+const createDiscordClient: () => Client = () =>
   new Client({
     intents: [
       GatewayIntentBits.Guilds,

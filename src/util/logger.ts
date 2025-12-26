@@ -1,5 +1,8 @@
 import type Logger from "../models/logger.js";
-import type { BasicLogger, CloneParams } from "../models/logger.js";
+import type { BasicLogger } from "../models/logger.js";
+import { trailWith } from "./array-helpers.js";
+
+const SEPARATOR = "|";
 
 export class ContextLogger implements Logger {
   private readonly basicLogger: BasicLogger;
@@ -11,19 +14,23 @@ export class ContextLogger implements Logger {
   }
 
   info(...data: unknown[]): void {
-    this.basicLogger.info(...this.context, ...data);
+    this.basicLogger.info(...trailWith(this.context, SEPARATOR), ...data);
   }
   error(...data: unknown[]): void {
-    this.basicLogger.error(...this.context, "ERROR:", ...data);
+    this.basicLogger.error(
+      ...trailWith(this.context, SEPARATOR),
+      "ERROR:",
+      ...data,
+    );
   }
 
-  clone({ contextToAdd, toLog }: CloneParams): Logger {
+  clone(contextToAdd: unknown, ...toLog: unknown[]): Logger {
     const newLogger = new ContextLogger(this.basicLogger, [
       ...this.context,
       contextToAdd,
     ]);
 
-    newLogger.info(toLog);
+    newLogger.info(...toLog);
 
     return newLogger;
   }
