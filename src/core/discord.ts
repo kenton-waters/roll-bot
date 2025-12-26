@@ -15,7 +15,10 @@ export const startBot = async ({
   discordToken,
   deps: { handleMessage, prevLogger },
 }: StartBotParams): Promise<void> => {
-  const startBotLogger = prevLogger.clone("discord", "Executing startBot...");
+  const startBotLogger = prevLogger.logWithNew(
+    "discord",
+    "Executing startBot...",
+  );
 
   discordClient.once(Events.ClientReady, (readyClient) => {
     startBotLogger.info(
@@ -25,7 +28,7 @@ export const startBot = async ({
   });
 
   discordClient.on(Events.MessageCreate, (message) => {
-    const messageLogger = startBotLogger.clone(
+    const messageLogger = startBotLogger.logWithNew(
       `message ${message.id}`,
       "Message created:",
       {

@@ -1,13 +1,12 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { DiscordMessage } from "../../src/models/discord.js";
 import { handleMessage } from "../../src/core/handle-message.js";
 import { nullLogger } from "../util.js";
 
 void describe("handleMessage", () => {
   void test("message from bot; do not reply", () => {
     // Arrange
-    const message: DiscordMessage = {
+    const message = {
       isAuthorBot: true,
       content: "blah",
     };
@@ -24,7 +23,7 @@ void describe("handleMessage", () => {
 
   void test("message not from bot; echo content", () => {
     // Arrange
-    const message: DiscordMessage = {
+    const message = {
       isAuthorBot: false,
       content: "blah",
     };

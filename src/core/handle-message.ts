@@ -14,7 +14,7 @@ export const handleMessage = ({
   message,
   deps: { prevLogger },
 }: HandleMessageParams): HandleMessageResult => {
-  const logger = prevLogger.clone(
+  const logger = prevLogger.logWithNew(
     "handle-message",
     "Handling message:",
     message,

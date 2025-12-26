@@ -7,7 +7,7 @@ export const nullLogger: Logger = {
   error: function (): void {
     /* empty */
   },
-  clone: function (): Logger {
+  logWithNew: function (): Logger {
     return this;
   },
 };

@@ -1,6 +1,6 @@
 import type Logger from "../models/logger.js";
 import type { BasicLogger } from "../models/logger.js";
-import { trailWith } from "./array-helpers.js";
+import { followEachWith } from "./array-helpers.js";
 
 const SEPARATOR = "|";
 
@@ -14,23 +14,23 @@ export class ContextLogger implements Logger {
   }
 
   info(...data: unknown[]): void {
-    this.basicLogger.info(...trailWith(this.context, SEPARATOR), ...data);
+    this.basicLogger.info(...followEachWith(this.context, SEPARATOR), ...data);
   }
   error(...data: unknown[]): void {
     this.basicLogger.error(
-      ...trailWith(this.context, SEPARATOR),
+      ...followEachWith(this.context, SEPARATOR),
       "ERROR:",
       ...data,
     );
   }
 
-  clone(contextToAdd: unknown, ...toLog: unknown[]): Logger {
+  logWithNew(contextToAdd: unknown, ...toLogWithNew: unknown[]): Logger {
     const newLogger = new ContextLogger(this.basicLogger, [
       ...this.context,
       contextToAdd,
     ]);
 
-    newLogger.info(...toLog);
+    newLogger.info(...toLogWithNew);
 
     return newLogger;
   }
