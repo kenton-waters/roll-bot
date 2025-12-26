@@ -11,7 +11,7 @@ interface HandleMessageParams {
     readonly prevLogger: Logger;
   };
 }
-export const handleMessage = ({
+const handleMessage = ({
   rollBotUserId,
   message,
   deps: { prevLogger },
@@ -30,7 +30,7 @@ export const handleMessage = ({
   }
 
   logger.info("Checking whether message was sent by roll-bot...");
-  if (rollBotUserId === message.authorUserId) {
+  if (message.authorUserId === rollBotUserId) {
     logger.info("Message is from roll-bot. Do not reply.");
     return { tag: "doNotReply" };
   }
@@ -41,3 +41,5 @@ export const handleMessage = ({
     data: message.content,
   };
 };
+
+export default handleMessage;

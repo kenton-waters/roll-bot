@@ -1,6 +1,6 @@
 import { Client, Events } from "discord.js";
 import type Logger from "../models/logger.js";
-import { handleMessage } from "./handle-message.js";
+import handleMessage from "./handle-message.js";
 
 interface StartBotParams {
   readonly discordClient: Client;
