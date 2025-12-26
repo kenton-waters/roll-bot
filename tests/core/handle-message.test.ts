@@ -40,4 +40,22 @@ void describe("handleMessage", () => {
     assert.strictEqual(handleMessageResult.tag, "reply");
     assert.strictEqual(handleMessageResult.data, "blah");
   });
+
+  void test("no bot user id; do not reply", () => {
+    // Arrange
+    const message = {
+      authorUserId: "authorId",
+      content: "blah",
+    };
+
+    // Act
+    const handleMessageResult = handleMessage({
+      rollBotUserId: undefined,
+      message: message,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(handleMessageResult.tag, "doNotReply");
+  });
 });

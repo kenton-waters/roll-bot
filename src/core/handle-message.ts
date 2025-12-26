@@ -23,6 +23,13 @@ export const handleMessage = ({
     "with roll-bot user id:",
     rollBotUserId,
   );
+
+  if (rollBotUserId === undefined) {
+    logger.error("rollBotUserId is undefined. Do not reply.");
+    return { tag: "doNotReply" };
+  }
+
+  logger.info("Checking whether message was sent by roll-bot...");
   if (rollBotUserId === message.authorUserId) {
     logger.info("Message is from roll-bot. Do not reply.");
     return { tag: "doNotReply" };
