@@ -11,10 +11,10 @@ export class ContextLogger implements Logger {
   }
 
   info(...data: unknown[]): void {
-    this.basicLogger.info([...this.context, ...data]);
+    this.basicLogger.info(...this.context, ...data);
   }
   error(...data: unknown[]): void {
-    this.basicLogger.error([...this.context, "ERROR:", ...data]);
+    this.basicLogger.error(...this.context, "ERROR:", ...data);
   }
 
   clone({ contextToAdd, toLog }: CloneParams): Logger {
