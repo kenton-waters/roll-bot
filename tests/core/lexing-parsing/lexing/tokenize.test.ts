@@ -69,4 +69,38 @@ void describe("tokenize", () => {
     assert.strictEqual(tokenizeResult.data.character, "x");
     assert.strictEqual(tokenizeResult.data.position, 5);
   });
+
+  void test("1d20; success; three tokens", () => {
+    // Arrange
+    const inputString = "1d20";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.data.length, 3);
+    assert.strictEqual(tokenizeResult.data[1].tag, "die");
+    assert.strictEqual(tokenizeResult.data[1].data.stringToken, "d");
+  });
+
+  void test("1D20; success; three tokens", () => {
+    // Arrange
+    const inputString = "1D20";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.data.length, 3);
+    assert.strictEqual(tokenizeResult.data[1].tag, "die");
+    assert.strictEqual(tokenizeResult.data[1].data.stringToken, "D");
+  });
 });

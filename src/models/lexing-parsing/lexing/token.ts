@@ -8,6 +8,8 @@ interface IntegerToken extends AbstractToken {
   readonly numericValue: number;
 }
 
-type Token = Tagged<"integer", IntegerToken>;
+type DieToken = AbstractToken;
+
+type Token = Tagged<"integer", IntegerToken> | Tagged<"die", DieToken>;
 
 export type { Token as default };
