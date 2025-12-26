@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsx --env-file=.env src/app.ts",
     "build": "tsc",
-    "test": "tsx --test tests/**/*.test.ts",
+    "test": "tsx --test \"tests/**/*.test.ts\"",
     "prepare": "husky"
   },
   "repository": {
