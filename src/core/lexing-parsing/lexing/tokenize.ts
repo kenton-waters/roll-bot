@@ -1,4 +1,8 @@
-import { die, integer } from "../../../constants/regular-expressions.js";
+import {
+  die,
+  integer,
+  whitespace,
+} from "../../../constants/regular-expressions.js";
 import type Token from "../../../models/lexing-parsing/lexing/token.js";
 import type Logger from "../../../models/logger.js";
 import type TokenizeResult from "../../../models/results/tokenize-result.js";
@@ -41,6 +45,20 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "die",
+          data: {
+            stringToken: stringToken,
+          },
+        },
+      ]);
+    }
+
+    const whitespaceMatch = remainingInput.match(whitespace);
+    if (whitespaceMatch) {
+      const stringToken = whitespaceMatch[0];
+      return go(remainingInput.slice(stringToken.length), [
+        ...pastTokens,
+        {
+          tag: "whitespace",
           data: {
             stringToken: stringToken,
           },

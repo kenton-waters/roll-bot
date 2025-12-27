@@ -10,6 +10,11 @@ interface IntegerToken extends AbstractToken {
 
 type DieToken = AbstractToken;
 
-type Token = Tagged<"integer", IntegerToken> | Tagged<"die", DieToken>;
+type WhitespaceToken = AbstractToken;
+
+type Token =
+  | Tagged<"integer", IntegerToken>
+  | Tagged<"die", DieToken>
+  | Tagged<"whitespace", WhitespaceToken>;
 
 export type { Token as default };

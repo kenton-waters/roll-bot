@@ -103,4 +103,21 @@ void describe("tokenize", () => {
     assert.strictEqual(tokenizeResult.data[1].tag, "die");
     assert.strictEqual(tokenizeResult.data[1].data.stringToken, "D");
   });
+
+  void test("whitespace input; success; one token", () => {
+    // Arrange
+    const inputString = "   \t  \n  ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.data.length, 1);
+    assert.strictEqual(tokenizeResult.data[0].tag, "whitespace");
+    assert.strictEqual(tokenizeResult.data[0].data.stringToken, "   \t  \n  ");
+  });
 });
