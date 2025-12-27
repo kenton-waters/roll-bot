@@ -2,15 +2,17 @@ import type Logger from "../models/logger.js";
 import type HandleMessageResult from "../models/results/handle-message-result.js";
 
 interface HandleMessageParams {
+  readonly rollBotUserId: string | undefined;
   readonly message: {
-    readonly isAuthorBot: boolean;
+    readonly authorUserId: string;
     readonly content: string;
   };
   readonly deps: {
     readonly prevLogger: Logger;
   };
 }
-export const handleMessage = ({
+const handleMessage = ({
+  rollBotUserId,
   message,
   deps: { prevLogger },
 }: HandleMessageParams): HandleMessageResult => {
@@ -18,15 +20,26 @@ export const handleMessage = ({
     "handle-message",
     "Handling message:",
     message,
+    "with roll-bot user id:",
+    rollBotUserId,
   );
-  if (message.isAuthorBot) {
-    logger.info("Message author is a bot. Do not reply.");
+
+  if (rollBotUserId === undefined) {
+    logger.error("rollBotUserId is undefined. Do not reply.");
     return { tag: "doNotReply" };
   }
 
-  logger.info("Message is from a human. Echo content:", message.content);
+  logger.info("Checking whether message was sent by roll-bot...");
+  if (message.authorUserId === rollBotUserId) {
+    logger.info("Message is from roll-bot. Do not reply.");
+    return { tag: "doNotReply" };
+  }
+
+  logger.info("Message is not from roll-bot. Echo content:", message.content);
   return {
     tag: "reply",
     data: message.content,
   };
 };
+
+export default handleMessage;

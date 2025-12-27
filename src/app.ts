@@ -2,7 +2,7 @@ import { DISCORD_TOKEN } from "./constants/environment-variables.js";
 import type Logger from "./models/logger.js";
 import { startBot } from "./core/discord.js";
 import createDiscordClient from "./factories/discord-client-factory.js";
-import { handleMessage } from "./core/handle-message.js";
+import handleMessage from "./core/handle-message.js";
 import createLogger from "./factories/logger-factory.js";
 
 const logger: Logger = createLogger({
