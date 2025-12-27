@@ -59,4 +59,48 @@ void describe("handleMessage", () => {
     // Assert
     assert.strictEqual(handleMessageResult.tag, "doNotReply");
   });
+
+  void test("tokenizer implementation error; reply with error", () => {
+    // Arrange
+    const message = {
+      authorUserId: "authorId",
+      content: "blah",
+    };
+
+    // Act
+    const handleMessageResult = handleMessage({
+      rollBotUserId: "botId",
+      message: message,
+      deps: { tokenize: nullTokenize, prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(handleMessageResult.tag, "reply");
+    assert.strictEqual(
+      handleMessageResult.data,
+      '{\n  "tag": "implementationError",\n  "data": {\n    "message": "",\n    "inputString": "",\n    "failurePosition": 0,\n    "untokenizableRemnant": ""\n  }\n}',
+    );
+  });
+
+  void test("untokenizableInput; reply with validation error", () => {
+    // Arrange
+    const message = {
+      authorUserId: "authorId",
+      content: "blah",
+    };
+
+    // Act
+    const handleMessageResult = handleMessage({
+      rollBotUserId: "botId",
+      message: message,
+      deps: { tokenize: tokenize, prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(handleMessageResult.tag, "reply");
+    assert.strictEqual(
+      handleMessageResult.data,
+      '{\n  "tag": "untokenizableInput",\n  "data": {\n    "inputString": "blah",\n    "failurePosition": 0,\n    "untokenizableRemnant": "blah"\n  }\n}',
+    );
+  });
 });
