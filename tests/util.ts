@@ -21,7 +21,7 @@ export const nullTokenize: typeof tokenize = () => {
     tag: "implementationError",
     data: {
       message: "",
-      inputString: "",
+      tokenizedInput: "",
       failurePosition: 0,
       untokenizableRemnant: "",
     },

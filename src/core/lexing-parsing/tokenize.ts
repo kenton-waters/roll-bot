@@ -8,7 +8,7 @@ import {
 import type Token from "../../models/lexing-parsing/token.js";
 import type Logger from "../../models/logger.js";
 import type TokenizeResult from "../../models/results/tokenize-result.js";
-import { inputStringLength } from "../../util/array-helpers.js";
+import { reconstructInputString } from "../../util/array-helpers.js";
 
 interface TokenizeParams {
   readonly inputString: string;
@@ -49,12 +49,13 @@ const tokenize = ({
     if (dieMatch) {
       const stringToken = dieMatch[0];
       if (stringToken !== "D" && stringToken !== "d") {
+        const reconstructedInputString = reconstructInputString(pastTokens);
         const err: TokenizeResult = {
           tag: "implementationError",
           data: {
             message: `String ${stringToken} was tokenized as "die" but is neither "D" nor "d"`,
-            inputString: inputString,
-            failurePosition: inputStringLength(pastTokens),
+            tokenizedInput: reconstructedInputString,
+            failurePosition: reconstructedInputString.length,
             untokenizableRemnant: remainingInput,
           },
         };
@@ -113,11 +114,12 @@ const tokenize = ({
       ]);
     }
 
+    const reconstructedInputString = reconstructInputString(pastTokens);
     return {
       tag: "untokenizableInput",
       data: {
-        inputString: inputString,
-        failurePosition: inputStringLength(pastTokens),
+        tokenizedInput: reconstructedInputString,
+        failurePosition: reconstructedInputString.length,
         untokenizableRemnant: remainingInput,
       },
     };

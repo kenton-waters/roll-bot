@@ -78,7 +78,7 @@ void describe("handleMessage", () => {
     assert.strictEqual(handleMessageResult.tag, "reply");
     assert.strictEqual(
       handleMessageResult.data,
-      '{\n  "tag": "implementationError",\n  "data": {\n    "message": "",\n    "inputString": "",\n    "failurePosition": 0,\n    "untokenizableRemnant": ""\n  }\n}',
+      '{\n  "tag": "implementationError",\n  "data": {\n    "message": "",\n    "tokenizedInput": "",\n    "failurePosition": 0,\n    "untokenizableRemnant": ""\n  }\n}',
     );
   });
 
@@ -100,7 +100,7 @@ void describe("handleMessage", () => {
     assert.strictEqual(handleMessageResult.tag, "reply");
     assert.strictEqual(
       handleMessageResult.data,
-      '{\n  "tag": "untokenizableInput",\n  "data": {\n    "inputString": "blah",\n    "failurePosition": 0,\n    "untokenizableRemnant": "blah"\n  }\n}',
+      '{\n  "tag": "untokenizableInput",\n  "data": {\n    "tokenizedInput": "",\n    "failurePosition": 0,\n    "untokenizableRemnant": "blah"\n  }\n}',
     );
   });
 });

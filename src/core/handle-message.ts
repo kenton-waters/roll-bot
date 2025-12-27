@@ -1,6 +1,6 @@
 import type Logger from "../models/logger.js";
 import type HandleMessageResult from "../models/results/handle-message-result.js";
-import { recoverInputString as reconstructInputString } from "../util/array-helpers.js";
+import { reconstructInputString } from "../util/array-helpers.js";
 import { stringify } from "../util/object-helpers.js";
 import tokenize from "./lexing-parsing/tokenize.js";
 
