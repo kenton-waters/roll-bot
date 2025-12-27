@@ -1,6 +1,6 @@
 import {
   die,
-  integer,
+  integer as nonnegativeInteger,
   minusSign,
   plusSign,
   whitespace,
@@ -30,13 +30,13 @@ const tokenize = ({
     if (remainingInput.length === 0)
       return { tag: "success", data: pastTokens };
 
-    const integerMatch = remainingInput.match(integer);
-    if (integerMatch) {
-      const stringToken = integerMatch[0];
+    const nonnegativeIntegerMatch = remainingInput.match(nonnegativeInteger);
+    if (nonnegativeIntegerMatch) {
+      const stringToken = nonnegativeIntegerMatch[0];
       return go(remainingInput.slice(stringToken.length), [
         ...pastTokens,
         {
-          tag: "integer",
+          tag: "nonnegativeInteger",
           data: {
             numericValue: parseInt(stringToken),
             stringToken: stringToken,

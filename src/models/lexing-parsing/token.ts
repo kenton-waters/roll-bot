@@ -4,7 +4,7 @@ interface AbstractToken {
   readonly stringToken: string;
 }
 
-interface IntegerToken extends AbstractToken {
+interface NonnegativeIntegerToken extends AbstractToken {
   readonly numericValue: number;
 }
 
@@ -12,7 +12,7 @@ interface DieToken extends AbstractToken {
   readonly stringToken: "D" | "d";
 }
 
-type WhitespaceToken = AbstractToken;
+export type WhitespaceToken = AbstractToken;
 
 interface PlusSignToken extends AbstractToken {
   readonly stringToken: "+";
@@ -23,7 +23,7 @@ interface MinusSignToken extends AbstractToken {
 }
 
 type Token =
-  | Tagged<"integer", IntegerToken>
+  | Tagged<"nonnegativeInteger", NonnegativeIntegerToken>
   | Tagged<"die", DieToken>
   | Tagged<"whitespace", WhitespaceToken>
   | Tagged<"plusSign", PlusSignToken>
