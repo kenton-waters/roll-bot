@@ -1,6 +1,7 @@
 import {
   die,
   integer,
+  plusSign,
   whitespace,
 } from "../../../constants/regular-expressions.js";
 import type Token from "../../../models/lexing-parsing/lexing/token.js";
@@ -47,6 +48,19 @@ const tokenize = ({
           tag: "die",
           data: {
             stringToken: stringToken,
+          },
+        },
+      ]);
+    }
+
+    const plusSignMatch = remainingInput.match(plusSign);
+    if (plusSignMatch) {
+      return go(remainingInput.slice(plusSignMatch[0].length), [
+        ...pastTokens,
+        {
+          tag: "plusSign",
+          data: {
+            stringToken: "+",
           },
         },
       ]);
