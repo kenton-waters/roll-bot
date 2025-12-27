@@ -114,7 +114,7 @@ const tokenize = ({
     }
 
     return {
-      tag: "unexpectedCharacter",
+      tag: "untokenizableInput",
       data: {
         inputString: inputString,
         position: inputStringLength(pastTokens),

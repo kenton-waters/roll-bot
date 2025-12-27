@@ -16,7 +16,7 @@ void describe("tokenize", () => {
     });
 
     // Assert
-    assert.strictEqual(tokenizeResult.tag, "unexpectedCharacter");
+    assert.strictEqual(tokenizeResult.tag, "untokenizableInput");
     assert.strictEqual(tokenizeResult.data.untokenizableRemnant, "xABC");
     assert.strictEqual(tokenizeResult.data.position, 0);
   });
@@ -65,7 +65,7 @@ void describe("tokenize", () => {
     });
 
     // Assert
-    assert.strictEqual(tokenizeResult.tag, "unexpectedCharacter");
+    assert.strictEqual(tokenizeResult.tag, "untokenizableInput");
     assert.strictEqual(tokenizeResult.data.untokenizableRemnant, "x6789");
     assert.strictEqual(tokenizeResult.data.position, 5);
   });

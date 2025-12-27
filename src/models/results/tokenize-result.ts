@@ -12,7 +12,7 @@ interface ImplementationError extends TokenizationFailure {
 }
 
 type TokenizeResult =
-  | Tagged<"unexpectedCharacter", TokenizationFailure>
+  | Tagged<"untokenizableInput", TokenizationFailure>
   | Tagged<"implementationError", ImplementationError>
   | Tagged<"success", Token[]>;
 
