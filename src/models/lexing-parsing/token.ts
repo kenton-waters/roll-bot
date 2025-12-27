@@ -1,4 +1,4 @@
-import type Tagged from "../../generic/tagged.js";
+import type Tagged from "../generic/tagged.js";
 
 interface AbstractToken {
   readonly stringToken: string;

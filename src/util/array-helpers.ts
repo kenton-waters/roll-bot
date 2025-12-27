@@ -1,4 +1,4 @@
-import type Token from "../models/lexing-parsing/lexing/token.js";
+import type Token from "../models/lexing-parsing/token.js";
 
 export const followEachWith = <ElementType>(
   array: ElementType[],

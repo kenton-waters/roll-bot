@@ -1,8 +1,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { nullLogger } from "../../../util.js";
-import TokenizeResult from "../../../../src/models/results/tokenize-result.js";
-import tokenize from "../../../../src/core/lexing-parsing/lexing/tokenize.js";
+import { nullLogger } from "../../util.js";
+import TokenizeResult from "../../../src/models/results/tokenize-result.js";
+import tokenize from "../../../src/core/lexing-parsing/tokenize.js";
 
 void describe("tokenize", () => {
   void test("immediate unexpected character; unexpectedCharacter at position 0", () => {

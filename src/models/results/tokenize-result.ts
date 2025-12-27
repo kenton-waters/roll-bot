@@ -1,5 +1,5 @@
 import type Tagged from "../generic/tagged.js";
-import type Token from "../lexing-parsing/lexing/token.js";
+import type Token from "../lexing-parsing/token.js";
 
 interface TokenizationFailure {
   readonly inputString: string;

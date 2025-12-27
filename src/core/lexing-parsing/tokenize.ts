@@ -4,11 +4,11 @@ import {
   minusSign,
   plusSign,
   whitespace,
-} from "../../../constants/regular-expressions.js";
-import type Token from "../../../models/lexing-parsing/lexing/token.js";
-import type Logger from "../../../models/logger.js";
-import type TokenizeResult from "../../../models/results/tokenize-result.js";
-import { inputStringLength } from "../../../util/array-helpers.js";
+} from "../../constants/regular-expressions.js";
+import type Token from "../../models/lexing-parsing/token.js";
+import type Logger from "../../models/logger.js";
+import type TokenizeResult from "../../models/results/tokenize-result.js";
+import { inputStringLength } from "../../util/array-helpers.js";
 
 interface TokenizeParams {
   readonly inputString: string;
