@@ -137,4 +137,21 @@ void describe("tokenize", () => {
     assert.strictEqual(tokenizeResult.data[7].tag, "plusSign");
     assert.strictEqual(tokenizeResult.data[7].data.stringToken, "+");
   });
+
+  void test("subtraction input; success", () => {
+    // Arrange
+    const inputString = " 1 d 20 - 3 ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.data.length, 11);
+    assert.strictEqual(tokenizeResult.data[7].tag, "minusSign");
+    assert.strictEqual(tokenizeResult.data[7].data.stringToken, "-");
+  });
 });

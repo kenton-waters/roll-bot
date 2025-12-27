@@ -1,6 +1,7 @@
 import {
   die,
   integer,
+  minusSign,
   plusSign,
   whitespace,
 } from "../../../constants/regular-expressions.js";
@@ -80,6 +81,19 @@ const tokenize = ({
           tag: "plusSign",
           data: {
             stringToken: "+",
+          },
+        },
+      ]);
+    }
+
+    const minusSignMatch = remainingInput.match(minusSign);
+    if (minusSignMatch) {
+      return go(remainingInput.slice(minusSignMatch[0].length), [
+        ...pastTokens,
+        {
+          tag: "minusSign",
+          data: {
+            stringToken: "-",
           },
         },
       ]);

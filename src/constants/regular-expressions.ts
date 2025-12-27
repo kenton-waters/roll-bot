@@ -5,3 +5,5 @@ export const die = /^(?:D|d)/;
 export const whitespace = /^\s+/;
 
 export const plusSign = /^\+/;
+
+export const minusSign = /^-/;
