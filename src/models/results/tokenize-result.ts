@@ -3,7 +3,7 @@ import type Token from "../lexing-parsing/token.js";
 
 interface TokenizationFailure {
   readonly inputString: string;
-  readonly position: number;
+  readonly failurePosition: number;
   readonly untokenizableRemnant: string;
 }
 

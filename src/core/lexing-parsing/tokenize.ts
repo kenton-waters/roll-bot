@@ -54,7 +54,7 @@ const tokenize = ({
           data: {
             message: `String ${stringToken} was tokenized as "die" but is neither "D" nor "d"`,
             inputString: inputString,
-            position: inputStringLength(pastTokens),
+            failurePosition: inputStringLength(pastTokens),
             untokenizableRemnant: remainingInput,
           },
         };
@@ -117,7 +117,7 @@ const tokenize = ({
       tag: "untokenizableInput",
       data: {
         inputString: inputString,
-        position: inputStringLength(pastTokens),
+        failurePosition: inputStringLength(pastTokens),
         untokenizableRemnant: remainingInput,
       },
     };

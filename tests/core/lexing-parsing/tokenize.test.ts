@@ -18,7 +18,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.tag, "untokenizableInput");
     assert.strictEqual(tokenizeResult.data.untokenizableRemnant, "xABC");
-    assert.strictEqual(tokenizeResult.data.position, 0);
+    assert.strictEqual(tokenizeResult.data.failurePosition, 0);
   });
 
   void test("empty input; success; empty tokens array", () => {
@@ -67,7 +67,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.tag, "untokenizableInput");
     assert.strictEqual(tokenizeResult.data.untokenizableRemnant, "x6789");
-    assert.strictEqual(tokenizeResult.data.position, 5);
+    assert.strictEqual(tokenizeResult.data.failurePosition, 5);
   });
 
   void test("1d20; success; three tokens", () => {
