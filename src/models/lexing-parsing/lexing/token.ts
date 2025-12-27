@@ -8,7 +8,9 @@ interface IntegerToken extends AbstractToken {
   readonly numericValue: number;
 }
 
-type DieToken = AbstractToken;
+interface DieToken extends AbstractToken {
+  readonly stringToken: "D" | "d";
+}
 
 type WhitespaceToken = AbstractToken;
 

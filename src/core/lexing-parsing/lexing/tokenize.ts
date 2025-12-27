@@ -7,6 +7,7 @@ import {
 import type Token from "../../../models/lexing-parsing/lexing/token.js";
 import type Logger from "../../../models/logger.js";
 import type TokenizeResult from "../../../models/results/tokenize-result.js";
+import { inputStringLength } from "../../../util/array-helpers.js";
 
 interface TokenizeParams {
   readonly inputString: string;
@@ -18,7 +19,11 @@ const tokenize = ({
   inputString,
   deps: { prevLogger },
 }: TokenizeParams): TokenizeResult => {
-  prevLogger.logWithNew("tokenize", "Tokenizing input string:", inputString);
+  const logger = prevLogger.logWithNew(
+    "tokenize",
+    "Tokenizing input string:",
+    inputString,
+  );
 
   const go = (remainingInput: string, pastTokens: Token[]): TokenizeResult => {
     if (remainingInput.length === 0)
@@ -42,6 +47,20 @@ const tokenize = ({
     const dieMatch = remainingInput.match(die);
     if (dieMatch) {
       const stringToken = dieMatch[0];
+      if (stringToken !== "D" && stringToken !== "d") {
+        const err: TokenizeResult = {
+          tag: "implementationError",
+          data: {
+            message: `String ${stringToken} was tokenized as "die" but is neither "D" nor "d"`,
+            inputString: inputString,
+            position: inputStringLength(pastTokens),
+            untokenizableRemnant: remainingInput,
+          },
+        };
+        logger.error(err);
+        return err;
+      }
+
       return go(remainingInput.slice(stringToken.length), [
         ...pastTokens,
         {
@@ -83,11 +102,9 @@ const tokenize = ({
     return {
       tag: "unexpectedCharacter",
       data: {
-        character: remainingInput[0] ?? "undefined",
-        position: pastTokens.reduce(
-          (acc, curr) => acc + curr.data.stringToken.length,
-          0,
-        ),
+        inputString: inputString,
+        position: inputStringLength(pastTokens),
+        untokenizableRemnant: remainingInput,
       },
     };
   };
