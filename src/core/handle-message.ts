@@ -1,5 +1,8 @@
 import type Logger from "../models/logger.js";
 import type HandleMessageResult from "../models/results/handle-message-result.js";
+import { recoverInputString as reconstructInputString } from "../util/array-helpers.js";
+import { stringify } from "../util/object-helpers.js";
+import tokenize from "./lexing-parsing/tokenize.js";
 
 interface HandleMessageParams {
   readonly rollBotUserId: string | undefined;
@@ -8,13 +11,14 @@ interface HandleMessageParams {
     readonly content: string;
   };
   readonly deps: {
+    readonly tokenize: typeof tokenize;
     readonly prevLogger: Logger;
   };
 }
 const handleMessage = ({
   rollBotUserId,
   message,
-  deps: { prevLogger },
+  deps: { tokenize, prevLogger },
 }: HandleMessageParams): HandleMessageResult => {
   const logger = prevLogger.logWithNew(
     "handle-message",
@@ -35,11 +39,43 @@ const handleMessage = ({
     return { tag: "doNotReply" };
   }
 
-  logger.info("Message is not from roll-bot. Echo content:", message.content);
-  return {
-    tag: "reply",
-    data: message.content,
-  };
+  logger.info(
+    "Message is not from roll-bot. Tokenize content:",
+    message.content,
+  );
+  const tokenizationResult = tokenize({
+    inputString: message.content,
+    deps: {
+      prevLogger: logger,
+    },
+  });
+  switch (tokenizationResult.tag) {
+    case "implementationError":
+      logger.error(tokenizationResult);
+      return {
+        tag: "reply",
+        data: stringify(tokenizationResult),
+      };
+    case "untokenizableInput":
+      logger.warn(tokenizationResult);
+      return {
+        tag: "reply",
+        data: stringify(tokenizationResult),
+      };
+    case "success": {
+      const reconstructedInputString = reconstructInputString(
+        tokenizationResult.data,
+      );
+      logger.info(
+        "Tokenization successful. Echoing reconstructed input string:",
+        reconstructedInputString,
+      );
+      return {
+        tag: "reply",
+        data: reconstructedInputString,
+      };
+    }
+  }
 };
 
 export default handleMessage;

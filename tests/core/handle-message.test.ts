@@ -1,7 +1,8 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import handleMessage from "../../src/core/handle-message.js";
-import { nullLogger } from "../util.js";
+import { nullLogger, nullTokenize } from "../util.js";
+import tokenize from "../../src/core/lexing-parsing/tokenize.js";
 
 void describe("handleMessage", () => {
   void test("message from bot; do not reply", () => {
@@ -15,7 +16,7 @@ void describe("handleMessage", () => {
     const handleMessageResult = handleMessage({
       rollBotUserId: "botId",
       message: message,
-      deps: { prevLogger: nullLogger },
+      deps: { tokenize: nullTokenize, prevLogger: nullLogger },
     });
 
     // Assert
@@ -26,19 +27,19 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
-      content: "blah",
+      content: " 1 d 20 - 5 ",
     };
 
     // Act
     const handleMessageResult = handleMessage({
       rollBotUserId: "botId",
       message: message,
-      deps: { prevLogger: nullLogger },
+      deps: { tokenize: tokenize, prevLogger: nullLogger },
     });
 
     // Assert
     assert.strictEqual(handleMessageResult.tag, "reply");
-    assert.strictEqual(handleMessageResult.data, "blah");
+    assert.strictEqual(handleMessageResult.data, " 1 d 20 - 5 ");
   });
 
   void test("no bot user id; do not reply", () => {
@@ -52,7 +53,7 @@ void describe("handleMessage", () => {
     const handleMessageResult = handleMessage({
       rollBotUserId: undefined,
       message: message,
-      deps: { prevLogger: nullLogger },
+      deps: { tokenize: nullTokenize, prevLogger: nullLogger },
     });
 
     // Assert

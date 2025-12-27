@@ -1,7 +1,11 @@
+import tokenize from "../src/core/lexing-parsing/tokenize.js";
 import Logger from "../src/models/logger.js";
 
 export const nullLogger: Logger = {
   info: function (): void {
+    /* empty */
+  },
+  warn: function (): void {
     /* empty */
   },
   error: function (): void {
@@ -10,4 +14,16 @@ export const nullLogger: Logger = {
   logWithNew: function (): Logger {
     return this;
   },
+};
+
+export const nullTokenize: typeof tokenize = () => {
+  return {
+    tag: "implementationError",
+    data: {
+      message: "",
+      inputString: "",
+      failurePosition: 0,
+      untokenizableRemnant: "",
+    },
+  };
 };

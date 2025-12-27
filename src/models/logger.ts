@@ -1,4 +1,4 @@
-export type BasicLogger = Pick<Console, "info" | "error">;
+export type BasicLogger = Pick<Console, "info" | "warn" | "error">;
 
 export default interface Logger extends BasicLogger {
   readonly logWithNew: (

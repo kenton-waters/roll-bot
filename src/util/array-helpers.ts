@@ -16,3 +16,10 @@ export const inputStringLength = (tokens: Token[]): number => {
     0,
   );
 };
+
+export const recoverInputString = (tokens: Token[]): string => {
+  return tokens.reduce(
+    (accumulator, currentToken) => accumulator + currentToken.data.stringToken,
+    "",
+  );
+};
