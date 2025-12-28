@@ -1,6 +1,8 @@
 import type ParseTree from "../../models/lexing-parsing/parse-tree.js";
+import type { WhitespaceToken } from "../../models/lexing-parsing/token.js";
 import type Token from "../../models/lexing-parsing/token.js";
 import type Logger from "../../models/logger.js";
+import type { ParseSuccess } from "../../models/results/parse-result.js";
 import type ParseResult from "../../models/results/parse-result.js";
 
 interface ParseParams {
@@ -34,14 +36,35 @@ const parse = ({
   }
 };
 
+export default parse;
+
 const parseTree = (tokens: Token[]): ParseResult<ParseTree> => {
+  const { parsedObject: initialWhitespaceToken, remainingTokens } =
+    parseOptionalWhitespace(tokens);
   return {
     tag: "success",
     data: {
-      parsedObject: {},
-      remainingTokens: tokens,
+      parsedObject: {
+        initialWhitespaceToken,
+        expression: null,
+      },
+      remainingTokens,
     },
   };
 };
 
-export default parse;
+function parseOptionalWhitespace(
+  tokens: Token[],
+): ParseSuccess<WhitespaceToken | null> {
+  if (tokens.length === 0 || tokens[0]?.tag !== "whitespace") {
+    return {
+      parsedObject: null,
+      remainingTokens: tokens,
+    };
+  }
+
+  return {
+    parsedObject: tokens[0].data,
+    remainingTokens: tokens.slice(1),
+  };
+}

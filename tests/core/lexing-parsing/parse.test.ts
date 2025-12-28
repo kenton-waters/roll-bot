@@ -27,9 +27,36 @@ void describe("parse", () => {
     assert.strictEqual(parseResult.tag, "success");
     assert.strictEqual(
       parseResult.data.parsedObject.initialWhitespaceToken,
-      undefined,
+      null,
     );
-    assert.strictEqual(parseResult.data.parsedObject.expression, undefined);
+    assert.strictEqual(parseResult.data.parsedObject.expression, null);
+    assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+  });
+
+  void test("only initial whitespace; success", () => {
+    // Arrange
+    const inputString = "  ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.tag, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult.data,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.tag, "success");
+    assert.strictEqual(
+      parseResult.data.parsedObject.initialWhitespaceToken?.stringToken,
+      "  ",
+    );
+    assert.strictEqual(parseResult.data.parsedObject.expression, null);
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
   });
 });

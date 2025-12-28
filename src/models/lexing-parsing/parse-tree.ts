@@ -8,13 +8,13 @@ import type {
 } from "./token.js";
 
 interface WhitespaceFollowing {
-  readonly followingWhitespaceToken?: WhitespaceToken;
+  readonly followingWhitespaceToken: WhitespaceToken | null;
 }
 
 interface Signed extends WhitespaceFollowing {
   readonly signValue: "-" | "+";
 
-  readonly signToken?: MinusSignToken | PlusSignToken;
+  readonly signToken: MinusSignToken | PlusSignToken | null;
 }
 
 interface NumericValue {
@@ -26,7 +26,7 @@ interface Integer extends Signed, NumericValue, WhitespaceFollowing {
 }
 
 interface NumDice extends NumericValue, WhitespaceFollowing {
-  readonly nonnegativeNumDiceToken?: NonnegativeIntegerToken;
+  readonly nonnegativeNumDiceToken: NonnegativeIntegerToken | null;
 }
 
 interface DieSymbol extends WhitespaceFollowing {
@@ -52,6 +52,6 @@ type Expression =
   | Tagged<"atom", Atom>;
 
 export default interface ParseTree {
-  readonly initialWhitespaceToken?: WhitespaceToken;
-  readonly expression?: Expression;
+  readonly initialWhitespaceToken: WhitespaceToken | null;
+  readonly expression: Expression | null;
 }

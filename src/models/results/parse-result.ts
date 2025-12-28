@@ -5,16 +5,16 @@ interface RemainingTokens {
   readonly remainingTokens: Token[];
 }
 
-interface SuccessData<ParseTo> extends RemainingTokens {
+export interface ParseSuccess<ParseTo> extends RemainingTokens {
   readonly parsedObject: ParseTo;
 }
 
-interface FailureData extends RemainingTokens {
+interface ParseFailure extends RemainingTokens {
   readonly reason: string;
 }
 
 type ParseResult<ParseTo> =
-  | Tagged<"success", SuccessData<ParseTo>>
-  | Tagged<"failure", FailureData>;
+  | Tagged<"success", ParseSuccess<ParseTo>>
+  | Tagged<"failure", ParseFailure>;
 
 export type { ParseResult as default };
