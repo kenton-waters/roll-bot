@@ -14,7 +14,7 @@ export interface DieToken extends AbstractToken {
 
 export type WhitespaceToken = AbstractToken;
 
-interface PlusSignToken extends AbstractToken {
+export interface PlusSignToken extends AbstractToken {
   readonly stringToken: "+";
 }
 

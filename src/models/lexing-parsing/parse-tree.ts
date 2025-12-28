@@ -3,6 +3,7 @@ import type {
   DieToken,
   MinusSignToken,
   NonnegativeIntegerToken,
+  PlusSignToken,
   WhitespaceToken,
 } from "./token.js";
 
@@ -10,31 +11,45 @@ interface WhitespaceFollowing {
   readonly followingWhitespaceToken?: WhitespaceToken;
 }
 
-interface IntegerData extends WhitespaceFollowing {
+interface Signed extends WhitespaceFollowing {
+  readonly signValue: "-" | "+";
+
+  readonly signToken?: MinusSignToken | PlusSignToken;
+}
+
+interface NumericValue {
   readonly numericValue: number;
+}
+
+interface Integer extends Signed, NumericValue, WhitespaceFollowing {
   readonly nonnegativeIntegerToken: NonnegativeIntegerToken;
 }
 
-interface NegativeIntegerData extends IntegerData {
-  readonly minusSignToken: MinusSignToken;
-  readonly internalWhitespaceToken?: WhitespaceToken;
+interface NumDice extends NumericValue, WhitespaceFollowing {
+  readonly nonnegativeNumDiceToken?: NonnegativeIntegerToken;
 }
 
-type Integer =
-  | Tagged<"negative", NegativeIntegerData>
-  | Tagged<"nonnegative", IntegerData>;
-
-interface DiceRoll extends WhitespaceFollowing {
-  readonly nonnegativeNumDiceToken: NonnegativeIntegerToken;
-  readonly numDiceToDWhitespaceToken?: WhitespaceToken;
+interface DieSymbol extends WhitespaceFollowing {
   readonly dToken: DieToken;
-  readonly dToNumFacesWhitespaceToken?: WhitespaceToken;
+}
+
+interface DiceRoll extends Signed, WhitespaceFollowing {
+  readonly numDice: NumDice;
+  readonly dieSymbol: DieSymbol;
   readonly positiveNumFacesToken: NonnegativeIntegerToken;
 }
 
 type Atom = Tagged<"integer", Integer> | Tagged<"diceRoll", DiceRoll>;
 
-type Expression = Tagged<"additionSubtraction"> | Tagged<"atom", Atom>;
+interface AdditionOrSubtraction extends WhitespaceFollowing {
+  readonly leftHandAtom: Atom;
+  readonly operatorToken: PlusSignToken | MinusSignToken;
+  readonly rightHandExpression: Expression;
+}
+
+type Expression =
+  | Tagged<"additionOrSubtraction", AdditionOrSubtraction>
+  | Tagged<"atom", Atom>;
 
 export default interface ParseTree {
   readonly initialWhitespaceToken?: WhitespaceToken;
