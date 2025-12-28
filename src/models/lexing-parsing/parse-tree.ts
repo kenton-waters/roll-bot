@@ -11,10 +11,14 @@ interface WhitespaceFollowing {
   readonly followingWhitespaceToken: WhitespaceToken | null;
 }
 
-interface Signed extends WhitespaceFollowing {
+export interface Sign extends WhitespaceFollowing {
   readonly signValue: "-" | "+";
 
   readonly signToken: MinusSignToken | PlusSignToken | null;
+}
+
+interface Signed {
+  readonly sign: Sign;
 }
 
 interface NumericValue {

@@ -2,6 +2,7 @@ import type {
   Atom,
   Expression,
   Integer,
+  Sign,
 } from "../../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../../models/lexing-parsing/parse-tree.js";
 import type { WhitespaceToken } from "../../models/lexing-parsing/token.js";
@@ -130,28 +131,53 @@ const parseAtom = (tokens: Token[]): ParseResult<Atom> => {
 };
 
 const parseInteger = (tokens: Token[]): ParseResult<Integer> => {
-  if (tokens[0]?.tag !== "nonnegativeInteger")
+  const { parsedObject: sign, remainingTokens: postSignTokens } =
+    parseSign(tokens);
+  if (postSignTokens[0]?.tag !== "nonnegativeInteger")
     return {
       tag: "failure",
       data: {
         reason: "TODO",
-        remainingTokens: tokens,
+        remainingTokens: postSignTokens,
       },
     };
 
-  const nonnegativeIntegerToken = tokens[0].data;
+  const nonnegativeIntegerToken = postSignTokens[0].data;
 
   return {
     tag: "success",
     data: {
       parsedObject: {
-        signValue: "+",
-        signToken: null,
-        numericValue: nonnegativeIntegerToken.numericValue,
+        sign: sign,
+        numericValue:
+          sign.signValue === "-"
+            ? -1 * nonnegativeIntegerToken.numericValue
+            : nonnegativeIntegerToken.numericValue,
         nonnegativeIntegerToken: nonnegativeIntegerToken,
         followingWhitespaceToken: null,
       },
-      remainingTokens: tokens.slice(1),
+      remainingTokens: postSignTokens.slice(1),
     },
+  };
+};
+
+const parseSign = (tokens: Token[]): ParseSuccess<Sign> => {
+  if (tokens[0]?.tag !== "minusSign" && tokens[0]?.tag !== "plusSign")
+    return {
+      parsedObject: {
+        signValue: "+",
+        signToken: null,
+        followingWhitespaceToken: null,
+      },
+      remainingTokens: tokens,
+    };
+
+  return {
+    parsedObject: {
+      signValue: tokens[0].data.stringToken,
+      signToken: tokens[0].data,
+      followingWhitespaceToken: null,
+    },
+    remainingTokens: tokens.slice(1),
   };
 };
