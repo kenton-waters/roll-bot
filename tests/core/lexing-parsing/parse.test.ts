@@ -5,6 +5,7 @@ import TokenizeResult from "../../../src/models/results/tokenize-result.js";
 import tokenize from "../../../src/core/lexing-parsing/tokenize.js";
 import parse from "../../../src/core/lexing-parsing/parse.js";
 import Token from "../../../src/models/lexing-parsing/token.js";
+import { reconstructInputString } from "../../../src/util/tree-helpers.js";
 
 void describe("parse", () => {
   void test("empty input; success", () => {
@@ -32,6 +33,10 @@ void describe("parse", () => {
     );
     assert.strictEqual(parseResult.data.parsedObject.expression, null);
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+    assert.strictEqual(
+      reconstructInputString(parseResult.data.parsedObject),
+      inputString,
+    );
   });
 
   void test("only initial whitespace; success", () => {
