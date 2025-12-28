@@ -29,15 +29,15 @@ export interface Integer extends Signed, NumericValue, WhitespaceFollowing {
   readonly nonnegativeIntegerToken: NonnegativeIntegerToken;
 }
 
-interface NumDice extends NumericValue, WhitespaceFollowing {
+export interface NumDice extends NumericValue, WhitespaceFollowing {
   readonly nonnegativeNumDiceToken: NonnegativeIntegerToken | null;
 }
 
 interface DieSymbol extends WhitespaceFollowing {
-  readonly dToken: DieToken;
+  readonly dieToken: DieToken;
 }
 
-interface DiceRoll extends Signed, WhitespaceFollowing {
+export interface DiceRoll extends Signed, WhitespaceFollowing {
   readonly numDice: NumDice;
   readonly dieSymbol: DieSymbol;
   readonly positiveNumFacesToken: NonnegativeIntegerToken;

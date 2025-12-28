@@ -241,4 +241,74 @@ void describe("parse", () => {
     );
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
   });
+
+  void test("dice roll; success", () => {
+    // Arrange
+    const inputString = " - 50 D 20 ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.tag, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult.data,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.tag, "success");
+    assert.strictEqual(parseResult.data.parsedObject.expression?.tag, "atom");
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.tag,
+      "diceRoll",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.sign.signValue,
+      "-",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.sign.signToken
+        ?.stringToken,
+      "-",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.numDice.numericValue,
+      50,
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.numDice
+        .nonnegativeNumDiceToken?.numericValue,
+      50,
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.numDice
+        .followingWhitespaceToken?.stringToken,
+      " ",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.dieSymbol.dieToken
+        .stringToken,
+      "D",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.dieSymbol
+        .followingWhitespaceToken?.stringToken,
+      " ",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.positiveNumFacesToken
+        .numericValue,
+      20,
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data
+        .followingWhitespaceToken?.stringToken,
+      " ",
+    );
+    assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+  });
 });

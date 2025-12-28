@@ -1,7 +1,9 @@
 import type {
   Atom,
+  DiceRoll,
   Expression,
   Integer,
+  NumDice,
   Sign,
 } from "../../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../../models/lexing-parsing/parse-tree.js";
@@ -112,6 +114,19 @@ const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
 };
 
 const parseAtom = (tokens: Token[]): ParseResult<Atom> => {
+  const parseDiceRollResult = parseDiceRoll(tokens);
+  if (parseDiceRollResult.tag === "success")
+    return {
+      tag: "success",
+      data: {
+        parsedObject: {
+          tag: "diceRoll",
+          data: parseDiceRollResult.data.parsedObject,
+        },
+        remainingTokens: parseDiceRollResult.data.remainingTokens,
+      },
+    };
+
   const parseIntegerResult = parseInteger(tokens);
   switch (parseIntegerResult.tag) {
     case "failure":
@@ -130,21 +145,116 @@ const parseAtom = (tokens: Token[]): ParseResult<Atom> => {
   }
 };
 
+const parseDiceRoll = (tokens: Token[]): ParseResult<DiceRoll> => {
+  const { parsedObject: sign, remainingTokens: postSignTokens } =
+    parseSign(tokens);
+
+  const { parsedObject: numDice, remainingTokens: postNumDiceTokens } =
+    parseNumDice(postSignTokens);
+
+  const nextToken = postNumDiceTokens[0];
+  if (nextToken?.tag !== "die")
+    return {
+      tag: "failure",
+      data: {
+        reason: "Expected 'd' or 'D' not found when parsing diceRoll atom.",
+        remainingTokens: postNumDiceTokens,
+      },
+    };
+
+  const dieToken = nextToken.data;
+  const {
+    parsedObject: postDieTokenWhitespaceToken,
+    remainingTokens: postDieTokenTokens,
+  } = parseOptionalWhitespace(postNumDiceTokens.slice(1));
+
+  const postDieToken = postDieTokenTokens[0];
+  if (postDieToken?.tag !== "nonnegativeInteger")
+    return {
+      tag: "failure",
+      data: {
+        reason:
+          "Expected nonnegative integer not found when parsing diceRoll's number of faces.",
+        remainingTokens: postDieTokenTokens,
+      },
+    };
+
+  const positiveNumFacesToken = postDieToken.data;
+  if (positiveNumFacesToken.numericValue < 1)
+    return {
+      tag: "failure",
+      data: {
+        reason: "Number of faces on a die may not be less than 1.",
+        remainingTokens: postDieTokenTokens,
+      },
+    };
+
+  const {
+    parsedObject: postNumFacesWhitespaceToken,
+    remainingTokens: postNumFacesTokens,
+  } = parseOptionalWhitespace(postDieTokenTokens.slice(1));
+
+  return {
+    tag: "success",
+    data: {
+      parsedObject: {
+        sign,
+        numDice,
+        dieSymbol: {
+          dieToken,
+          followingWhitespaceToken: postDieTokenWhitespaceToken,
+        },
+        positiveNumFacesToken,
+        followingWhitespaceToken: postNumFacesWhitespaceToken,
+      },
+      remainingTokens: postNumFacesTokens,
+    },
+  };
+};
+
+const parseNumDice = (tokens: Token[]): ParseSuccess<NumDice> => {
+  const firstToken = tokens[0];
+  if (firstToken?.tag !== "nonnegativeInteger")
+    return {
+      parsedObject: {
+        numericValue: 1,
+        nonnegativeNumDiceToken: null,
+        followingWhitespaceToken: null,
+      },
+      remainingTokens: tokens,
+    };
+
+  const nonnegativeIntegerToken = firstToken.data;
+
+  const { parsedObject: whitespaceToken, remainingTokens } =
+    parseOptionalWhitespace(tokens.slice(1));
+
+  return {
+    parsedObject: {
+      numericValue: nonnegativeIntegerToken.numericValue,
+      nonnegativeNumDiceToken: nonnegativeIntegerToken,
+      followingWhitespaceToken: whitespaceToken,
+    },
+    remainingTokens,
+  };
+};
+
 const parseInteger = (tokens: Token[]): ParseResult<Integer> => {
   const { parsedObject: sign, remainingTokens: postSignTokens } =
     parseSign(tokens);
 
-  const firstToken = postSignTokens[0];
-  if (firstToken?.tag !== "nonnegativeInteger")
+  const nextToken = postSignTokens[0];
+  if (nextToken?.tag !== "nonnegativeInteger")
     return {
       tag: "failure",
       data: {
-        reason: "Expected nonnegative integer token not found",
+        reason:
+          "Expected nonnegative integer token not found when parsing integer atom.",
         remainingTokens: postSignTokens,
       },
     };
 
-  const nonnegativeIntegerToken = firstToken.data;
+  const nonnegativeIntegerToken = nextToken.data;
 
   const { parsedObject: whitespaceToken, remainingTokens } =
     parseOptionalWhitespace(postSignTokens.slice(1));
