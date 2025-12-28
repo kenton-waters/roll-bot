@@ -1,4 +1,5 @@
 import type {
+  AdditionOrSubtraction,
   Atom,
   DiceRoll,
   Expression,
@@ -95,6 +96,19 @@ const parseOptionalWhitespace = (
 };
 
 const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
+  const parseAdditionOrSubtractionResult = parseAdditionOrSubtraction(tokens);
+  if (parseAdditionOrSubtractionResult.tag === "success")
+    return {
+      tag: "success",
+      data: {
+        parsedObject: {
+          tag: "additionOrSubtraction",
+          data: parseAdditionOrSubtractionResult.data.parsedObject,
+        },
+        remainingTokens: parseAdditionOrSubtractionResult.data.remainingTokens,
+      },
+    };
+
   const parseAtomResult = parseAtom(tokens);
   switch (parseAtomResult.tag) {
     case "failure":
@@ -111,6 +125,54 @@ const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
         },
       };
   }
+};
+
+const parseAdditionOrSubtraction = (
+  tokens: Token[],
+): ParseResult<AdditionOrSubtraction> => {
+  const parseLeftHandAtomResult = parseAtom(tokens);
+
+  if (parseLeftHandAtomResult.tag !== "success") return parseLeftHandAtomResult;
+
+  const {
+    parsedObject: leftHandAtom,
+    remainingTokens: postLeftHandAtomTokens,
+  } = parseLeftHandAtomResult.data;
+
+  const nextToken = postLeftHandAtomTokens[0];
+  if (nextToken?.tag !== "plusSign" && nextToken?.tag !== "minusSign")
+    return {
+      tag: "failure",
+      data: {
+        reason:
+          "Expected '+' or '-' not found while parsing addition or subtraction expression.",
+        remainingTokens: postLeftHandAtomTokens,
+      },
+    };
+
+  const operatorToken = nextToken.data;
+
+  const {
+    parsedObject: postOperatorWhitespaceToken,
+    remainingTokens: postOperatorTokens,
+  } = parseOptionalWhitespace(postLeftHandAtomTokens.slice(1));
+
+  const parseRightHandExpressionResult = parseExpression(postOperatorTokens);
+  if (parseRightHandExpressionResult.tag !== "success")
+    return parseRightHandExpressionResult;
+
+  return {
+    tag: "success",
+    data: {
+      parsedObject: {
+        leftHandAtom,
+        operatorToken,
+        followingWhitespaceToken: postOperatorWhitespaceToken,
+        rightHandExpression: parseRightHandExpressionResult.data.parsedObject,
+      },
+      remainingTokens: parseRightHandExpressionResult.data.remainingTokens,
+    },
+  };
 };
 
 const parseAtom = (tokens: Token[]): ParseResult<Atom> => {

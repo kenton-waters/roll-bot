@@ -311,4 +311,39 @@ void describe("parse", () => {
     );
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
   });
+
+  void test("subtraction; success", () => {
+    // Arrange
+    const inputString = "0- 0";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.tag, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult.data,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.tag, "success");
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression?.tag,
+      "additionOrSubtraction",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.operatorToken.stringToken,
+      "-",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.followingWhitespaceToken
+        ?.stringToken,
+      " ",
+    );
+    assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+  });
 });

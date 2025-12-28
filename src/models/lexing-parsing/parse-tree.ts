@@ -45,7 +45,7 @@ export interface DiceRoll extends Signed, WhitespaceFollowing {
 
 export type Atom = Tagged<"integer", Integer> | Tagged<"diceRoll", DiceRoll>;
 
-interface AdditionOrSubtraction extends WhitespaceFollowing {
+export interface AdditionOrSubtraction extends WhitespaceFollowing {
   readonly leftHandAtom: Atom;
   readonly operatorToken: PlusSignToken | MinusSignToken;
   readonly rightHandExpression: Expression;
