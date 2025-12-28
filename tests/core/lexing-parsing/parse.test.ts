@@ -191,4 +191,54 @@ void describe("parse", () => {
     );
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
   });
+
+  void test("signed integer with whitespace; success", () => {
+    // Arrange
+    const inputString = " + 3 ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.tag, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult.data,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.tag, "success");
+    assert.strictEqual(parseResult.data.parsedObject.expression?.tag, "atom");
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.tag,
+      "integer",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.sign.signValue,
+      "+",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.sign.signToken
+        ?.stringToken,
+      "+",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.numericValue,
+      3,
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data.nonnegativeIntegerToken
+        .stringToken,
+      "3",
+    );
+    assert.strictEqual(
+      parseResult.data.parsedObject.expression.data.data
+        .followingWhitespaceToken?.stringToken,
+      " ",
+    );
+    assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+  });
 });

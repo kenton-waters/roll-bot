@@ -133,16 +133,21 @@ const parseAtom = (tokens: Token[]): ParseResult<Atom> => {
 const parseInteger = (tokens: Token[]): ParseResult<Integer> => {
   const { parsedObject: sign, remainingTokens: postSignTokens } =
     parseSign(tokens);
-  if (postSignTokens[0]?.tag !== "nonnegativeInteger")
+
+  const firstToken = postSignTokens[0];
+  if (firstToken?.tag !== "nonnegativeInteger")
     return {
       tag: "failure",
       data: {
-        reason: "TODO",
+        reason: "Expected nonnegative integer token not found",
         remainingTokens: postSignTokens,
       },
     };
 
-  const nonnegativeIntegerToken = postSignTokens[0].data;
+  const nonnegativeIntegerToken = firstToken.data;
+
+  const { parsedObject: whitespaceToken, remainingTokens } =
+    parseOptionalWhitespace(postSignTokens.slice(1));
 
   return {
     tag: "success",
@@ -154,15 +159,16 @@ const parseInteger = (tokens: Token[]): ParseResult<Integer> => {
             ? -1 * nonnegativeIntegerToken.numericValue
             : nonnegativeIntegerToken.numericValue,
         nonnegativeIntegerToken: nonnegativeIntegerToken,
-        followingWhitespaceToken: null,
+        followingWhitespaceToken: whitespaceToken,
       },
-      remainingTokens: postSignTokens.slice(1),
+      remainingTokens: remainingTokens,
     },
   };
 };
 
 const parseSign = (tokens: Token[]): ParseSuccess<Sign> => {
-  if (tokens[0]?.tag !== "minusSign" && tokens[0]?.tag !== "plusSign")
+  const firstToken = tokens[0];
+  if (firstToken?.tag !== "minusSign" && firstToken?.tag !== "plusSign")
     return {
       parsedObject: {
         signValue: "+",
@@ -172,12 +178,17 @@ const parseSign = (tokens: Token[]): ParseSuccess<Sign> => {
       remainingTokens: tokens,
     };
 
+  const signToken = firstToken;
+
+  const { parsedObject: whitespaceToken, remainingTokens } =
+    parseOptionalWhitespace(tokens.slice(1));
+
   return {
     parsedObject: {
-      signValue: tokens[0].data.stringToken,
-      signToken: tokens[0].data,
-      followingWhitespaceToken: null,
+      signValue: signToken.data.stringToken,
+      signToken: signToken.data,
+      followingWhitespaceToken: whitespaceToken,
     },
-    remainingTokens: tokens.slice(1),
+    remainingTokens: remainingTokens,
   };
 };
