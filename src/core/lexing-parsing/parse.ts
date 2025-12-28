@@ -1,3 +1,8 @@
+import type {
+  Atom,
+  Expression,
+  Integer,
+} from "../../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../../models/lexing-parsing/parse-tree.js";
 import type { WhitespaceToken } from "../../models/lexing-parsing/token.js";
 import type Token from "../../models/lexing-parsing/token.js";
@@ -39,24 +44,41 @@ const parse = ({
 export default parse;
 
 const parseTree = (tokens: Token[]): ParseResult<ParseTree> => {
-  const { parsedObject: initialWhitespaceToken, remainingTokens } =
-    parseOptionalWhitespace(tokens);
-  return {
-    tag: "success",
-    data: {
-      parsedObject: {
-        initialWhitespaceToken,
-        expression: null,
-      },
-      remainingTokens,
-    },
-  };
+  const {
+    parsedObject: initialWhitespaceToken,
+    remainingTokens: postInitialWhitespaceTokens,
+  } = parseOptionalWhitespace(tokens);
+  const parseExpressionResult = parseExpression(postInitialWhitespaceTokens);
+  switch (parseExpressionResult.tag) {
+    case "failure":
+      return {
+        tag: "success",
+        data: {
+          parsedObject: {
+            initialWhitespaceToken,
+            expression: null,
+          },
+          remainingTokens: parseExpressionResult.data.remainingTokens,
+        },
+      };
+    case "success":
+      return {
+        tag: "success",
+        data: {
+          parsedObject: {
+            initialWhitespaceToken,
+            expression: parseExpressionResult.data.parsedObject,
+          },
+          remainingTokens: parseExpressionResult.data.remainingTokens,
+        },
+      };
+  }
 };
 
-function parseOptionalWhitespace(
+const parseOptionalWhitespace = (
   tokens: Token[],
-): ParseSuccess<WhitespaceToken | null> {
-  if (tokens.length === 0 || tokens[0]?.tag !== "whitespace") {
+): ParseSuccess<WhitespaceToken | null> => {
+  if (tokens[0]?.tag !== "whitespace") {
     return {
       parsedObject: null,
       remainingTokens: tokens,
@@ -67,4 +89,69 @@ function parseOptionalWhitespace(
     parsedObject: tokens[0].data,
     remainingTokens: tokens.slice(1),
   };
-}
+};
+
+const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
+  const parseAtomResult = parseAtom(tokens);
+  switch (parseAtomResult.tag) {
+    case "failure":
+      return parseAtomResult;
+    case "success":
+      return {
+        tag: "success",
+        data: {
+          parsedObject: {
+            tag: "atom",
+            data: parseAtomResult.data.parsedObject,
+          },
+          remainingTokens: parseAtomResult.data.remainingTokens,
+        },
+      };
+  }
+};
+
+const parseAtom = (tokens: Token[]): ParseResult<Atom> => {
+  const parseIntegerResult = parseInteger(tokens);
+  switch (parseIntegerResult.tag) {
+    case "failure":
+      return parseIntegerResult;
+    case "success":
+      return {
+        tag: "success",
+        data: {
+          parsedObject: {
+            tag: "integer",
+            data: parseIntegerResult.data.parsedObject,
+          },
+          remainingTokens: parseIntegerResult.data.remainingTokens,
+        },
+      };
+  }
+};
+
+const parseInteger = (tokens: Token[]): ParseResult<Integer> => {
+  if (tokens[0]?.tag !== "nonnegativeInteger")
+    return {
+      tag: "failure",
+      data: {
+        reason: "TODO",
+        remainingTokens: tokens,
+      },
+    };
+
+  const nonnegativeIntegerToken = tokens[0].data;
+
+  return {
+    tag: "success",
+    data: {
+      parsedObject: {
+        signValue: "+",
+        signToken: null,
+        numericValue: nonnegativeIntegerToken.numericValue,
+        nonnegativeIntegerToken: nonnegativeIntegerToken,
+        followingWhitespaceToken: null,
+      },
+      remainingTokens: tokens.slice(1),
+    },
+  };
+};

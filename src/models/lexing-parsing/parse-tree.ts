@@ -21,7 +21,7 @@ interface NumericValue {
   readonly numericValue: number;
 }
 
-interface Integer extends Signed, NumericValue, WhitespaceFollowing {
+export interface Integer extends Signed, NumericValue, WhitespaceFollowing {
   readonly nonnegativeIntegerToken: NonnegativeIntegerToken;
 }
 
@@ -39,7 +39,7 @@ interface DiceRoll extends Signed, WhitespaceFollowing {
   readonly positiveNumFacesToken: NonnegativeIntegerToken;
 }
 
-type Atom = Tagged<"integer", Integer> | Tagged<"diceRoll", DiceRoll>;
+export type Atom = Tagged<"integer", Integer> | Tagged<"diceRoll", DiceRoll>;
 
 interface AdditionOrSubtraction extends WhitespaceFollowing {
   readonly leftHandAtom: Atom;
@@ -47,7 +47,7 @@ interface AdditionOrSubtraction extends WhitespaceFollowing {
   readonly rightHandExpression: Expression;
 }
 
-type Expression =
+export type Expression =
   | Tagged<"additionOrSubtraction", AdditionOrSubtraction>
   | Tagged<"atom", Atom>;
 
