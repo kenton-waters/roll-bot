@@ -1,25 +1,42 @@
 import type Tagged from "../generic/tagged.js";
-import type { WhitespaceToken } from "./token.js";
+import type {
+  DieToken,
+  MinusSignToken,
+  NonnegativeIntegerToken,
+  WhitespaceToken,
+} from "./token.js";
 
-export default interface ParseTree {
-  readonly initialWhitespace?: WhitespaceToken;
-  readonly root?: Expression;
+interface WhitespaceFollowing {
+  readonly followingWhitespaceToken?: WhitespaceToken;
 }
+
+interface IntegerData extends WhitespaceFollowing {
+  readonly numericValue: number;
+  readonly nonnegativeIntegerToken: NonnegativeIntegerToken;
+}
+
+interface NegativeIntegerData extends IntegerData {
+  readonly minusSignToken: MinusSignToken;
+  readonly internalWhitespaceToken?: WhitespaceToken;
+}
+
+type Integer =
+  | Tagged<"negative", NegativeIntegerData>
+  | Tagged<"nonnegative", IntegerData>;
+
+interface DiceRoll extends WhitespaceFollowing {
+  readonly nonnegativeNumDiceToken: NonnegativeIntegerToken;
+  readonly numDiceToDWhitespaceToken?: WhitespaceToken;
+  readonly dToken: DieToken;
+  readonly dToNumFacesWhitespaceToken?: WhitespaceToken;
+  readonly positiveNumFacesToken: NonnegativeIntegerToken;
+}
+
+type Atom = Tagged<"integer", Integer> | Tagged<"diceRoll", DiceRoll>;
 
 type Expression = Tagged<"additionSubtraction"> | Tagged<"atom", Atom>;
 
-type Atom = Tagged<"integer", Integer> | Tagged<"diceRoll">;
-
-/*interface FollowingWhitespace {
-  readonly followingWhitespace?: WhitespaceToken;
-}*/
-
-type Integer = Tagged<"negative"> | Tagged<"nonnegative">;
-
-/*interface IntegerData extends FollowingWhitespace {
-  readonly value: number;
-  readonly 
+export default interface ParseTree {
+  readonly initialWhitespaceToken?: WhitespaceToken;
+  readonly expression?: Expression;
 }
-
-interface DiceRoll extends FollowingWhitespace {}
-*/

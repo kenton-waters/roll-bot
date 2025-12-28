@@ -4,11 +4,11 @@ interface AbstractToken {
   readonly stringToken: string;
 }
 
-interface NonnegativeIntegerToken extends AbstractToken {
+export interface NonnegativeIntegerToken extends AbstractToken {
   readonly numericValue: number;
 }
 
-interface DieToken extends AbstractToken {
+export interface DieToken extends AbstractToken {
   readonly stringToken: "D" | "d";
 }
 
@@ -18,7 +18,7 @@ interface PlusSignToken extends AbstractToken {
   readonly stringToken: "+";
 }
 
-interface MinusSignToken extends AbstractToken {
+export interface MinusSignToken extends AbstractToken {
   readonly stringToken: "-";
 }
 
