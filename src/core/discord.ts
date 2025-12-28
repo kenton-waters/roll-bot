@@ -2,6 +2,7 @@ import { Client, Events } from "discord.js";
 import type Logger from "../models/logger.js";
 import handleMessage from "./handle-message.js";
 import tokenize from "./lexing-parsing/tokenize.js";
+import parse from "./lexing-parsing/parse.js";
 
 interface StartBotParams {
   readonly discordClient: Client;
@@ -47,7 +48,7 @@ export const startBot = async ({
         authorUserId: message.author.id,
         content: message.content,
       },
-      deps: { tokenize: tokenize, prevLogger: messageLogger },
+      deps: { tokenize, parse, prevLogger: messageLogger },
     });
 
     if (result.tag === "doNotReply") {

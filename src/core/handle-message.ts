@@ -1,7 +1,8 @@
 import type Logger from "../models/logger.js";
 import type HandleMessageResult from "../models/results/handle-message-result.js";
-import { reconstructInputString } from "../util/array-helpers.js";
 import { stringify } from "../util/object-helpers.js";
+import { reconstructInputString } from "../util/tree-helpers.js";
+import type parse from "./lexing-parsing/parse.js";
 import tokenize from "./lexing-parsing/tokenize.js";
 
 interface HandleMessageParams {
@@ -12,13 +13,14 @@ interface HandleMessageParams {
   };
   readonly deps: {
     readonly tokenize: typeof tokenize;
+    readonly parse: typeof parse;
     readonly prevLogger: Logger;
   };
 }
 const handleMessage = ({
   rollBotUserId,
   message,
-  deps: { tokenize, prevLogger },
+  deps: { tokenize, parse, prevLogger },
 }: HandleMessageParams): HandleMessageResult => {
   const logger = prevLogger.logWithNew(
     "handle-message",
@@ -63,17 +65,36 @@ const handleMessage = ({
         data: stringify(tokenizationResult),
       };
     case "success": {
-      const reconstructedInputString = reconstructInputString(
-        tokenizationResult.data,
-      );
-      logger.info(
-        "Tokenization successful. Echoing reconstructed input string:",
-        reconstructedInputString,
-      );
-      return {
-        tag: "reply",
-        data: reconstructedInputString,
-      };
+      logger.info("Tokenization successful. Parsing...");
+
+      const parseResult = parse({
+        tokens: tokenizationResult.data,
+        deps: {
+          prevLogger: logger,
+        },
+      });
+
+      switch (parseResult.tag) {
+        case "failure":
+          logger.warn(parseResult);
+          return {
+            tag: "reply",
+            data: stringify(parseResult),
+          };
+        case "success": {
+          const reconstructedInputString = reconstructInputString(
+            parseResult.data.parsedObject,
+          );
+          logger.info(
+            "Parsing successful. Echoing reconstructed input string:",
+            reconstructedInputString,
+          );
+          return {
+            tag: "reply",
+            data: reconstructedInputString,
+          };
+        }
+      }
     }
   }
 };
