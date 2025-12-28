@@ -4,6 +4,7 @@ import handleMessage from "../../src/core/handle-message.js";
 import { nullLogger, nullTokenize } from "../util.js";
 import tokenize from "../../src/core/lexing-parsing/tokenize.js";
 import parse from "../../src/core/lexing-parsing/parse.js";
+import { evaluate } from "../../src/util/tree-helpers.js";
 
 void describe("handleMessage", () => {
   void test("message from bot; do not reply", () => {
@@ -17,14 +18,14 @@ void describe("handleMessage", () => {
     const handleMessageResult = handleMessage({
       rollBotUserId: "botId",
       message: message,
-      deps: { tokenize: nullTokenize, parse, prevLogger: nullLogger },
+      deps: { tokenize: nullTokenize, parse, evaluate, prevLogger: nullLogger },
     });
 
     // Assert
     assert.strictEqual(handleMessageResult.tag, "doNotReply");
   });
 
-  void test("message not from bot; echo content", () => {
+  void test("message not from bot; evaluate", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
@@ -35,12 +36,15 @@ void describe("handleMessage", () => {
     const handleMessageResult = handleMessage({
       rollBotUserId: "botId",
       message: message,
-      deps: { tokenize: tokenize, parse, prevLogger: nullLogger },
+      deps: { tokenize: tokenize, parse, evaluate, prevLogger: nullLogger },
     });
 
-    // Assert
     assert.strictEqual(handleMessageResult.tag, "reply");
-    assert.strictEqual(handleMessageResult.data, " 1 d 20 - 5 ");
+    const result: number = parseInt(handleMessageResult.data);
+
+    // Assert
+    assert.ok(result >= -4);
+    assert.ok(result <= 25);
   });
 
   void test("no bot user id; do not reply", () => {
@@ -54,7 +58,7 @@ void describe("handleMessage", () => {
     const handleMessageResult = handleMessage({
       rollBotUserId: undefined,
       message: message,
-      deps: { tokenize: nullTokenize, parse, prevLogger: nullLogger },
+      deps: { tokenize: nullTokenize, parse, evaluate, prevLogger: nullLogger },
     });
 
     // Assert
@@ -72,7 +76,7 @@ void describe("handleMessage", () => {
     const handleMessageResult = handleMessage({
       rollBotUserId: "botId",
       message: message,
-      deps: { tokenize: nullTokenize, parse, prevLogger: nullLogger },
+      deps: { tokenize: nullTokenize, parse, evaluate, prevLogger: nullLogger },
     });
 
     // Assert
@@ -94,7 +98,7 @@ void describe("handleMessage", () => {
     const handleMessageResult = handleMessage({
       rollBotUserId: "botId",
       message: message,
-      deps: { tokenize: tokenize, parse, prevLogger: nullLogger },
+      deps: { tokenize: tokenize, parse, evaluate, prevLogger: nullLogger },
     });
 
     // Assert

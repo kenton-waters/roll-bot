@@ -1,7 +1,7 @@
 import type Logger from "../models/logger.js";
 import type HandleMessageResult from "../models/results/handle-message-result.js";
 import { stringify } from "../util/object-helpers.js";
-import { reconstructInputString } from "../util/tree-helpers.js";
+import { evaluate } from "../util/tree-helpers.js";
 import type parse from "./lexing-parsing/parse.js";
 import tokenize from "./lexing-parsing/tokenize.js";
 
@@ -14,6 +14,7 @@ interface HandleMessageParams {
   readonly deps: {
     readonly tokenize: typeof tokenize;
     readonly parse: typeof parse;
+    readonly evaluate: typeof evaluate;
     readonly prevLogger: Logger;
   };
 }
@@ -82,16 +83,12 @@ const handleMessage = ({
             data: stringify(parseResult),
           };
         case "success": {
-          const reconstructedInputString = reconstructInputString(
-            parseResult.data.parsedObject,
-          );
-          logger.info(
-            "Parsing successful. Echoing reconstructed input string:",
-            reconstructedInputString,
-          );
+          logger.info("Parsing successful. Evaluating total...");
+          const total = evaluate(parseResult.data.parsedObject);
+          logger.info("Evaluation successful. Replying with total", total);
           return {
             tag: "reply",
-            data: reconstructedInputString,
+            data: total.toString(),
           };
         }
       }
