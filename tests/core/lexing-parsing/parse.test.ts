@@ -64,6 +64,10 @@ void describe("parse", () => {
     );
     assert.strictEqual(parseResult.data.parsedObject.expression, null);
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+    assert.strictEqual(
+      reconstructInputString(parseResult.data.parsedObject),
+      inputString,
+    );
   });
 
   void test("two whitespace tokens; failure; tokens not exhausted", () => {
@@ -145,6 +149,10 @@ void describe("parse", () => {
       null,
     );
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+    assert.strictEqual(
+      reconstructInputString(parseResult.data.parsedObject),
+      inputString,
+    );
   });
 
   void test("negative integer; success", () => {
@@ -195,6 +203,10 @@ void describe("parse", () => {
       null,
     );
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+    assert.strictEqual(
+      reconstructInputString(parseResult.data.parsedObject),
+      inputString,
+    );
   });
 
   void test("signed integer with whitespace; success", () => {
@@ -245,6 +257,10 @@ void describe("parse", () => {
       " ",
     );
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+    assert.strictEqual(
+      reconstructInputString(parseResult.data.parsedObject),
+      inputString,
+    );
   });
 
   void test("dice roll; success", () => {
@@ -315,6 +331,10 @@ void describe("parse", () => {
       " ",
     );
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+    assert.strictEqual(
+      reconstructInputString(parseResult.data.parsedObject),
+      inputString,
+    );
   });
 
   void test("subtraction; success", () => {
@@ -350,5 +370,9 @@ void describe("parse", () => {
       " ",
     );
     assert.strictEqual(parseResult.data.remainingTokens.length, 0);
+    assert.strictEqual(
+      reconstructInputString(parseResult.data.parsedObject),
+      inputString,
+    );
   });
 });
