@@ -4,26 +4,26 @@ interface AbstractToken {
   readonly stringToken: string;
 }
 
-interface IntegerToken extends AbstractToken {
+export interface NonnegativeIntegerToken extends AbstractToken {
   readonly numericValue: number;
 }
 
-interface DieToken extends AbstractToken {
+export interface DieToken extends AbstractToken {
   readonly stringToken: "D" | "d";
 }
 
-type WhitespaceToken = AbstractToken;
+export type WhitespaceToken = AbstractToken;
 
-interface PlusSignToken extends AbstractToken {
+export interface PlusSignToken extends AbstractToken {
   readonly stringToken: "+";
 }
 
-interface MinusSignToken extends AbstractToken {
+export interface MinusSignToken extends AbstractToken {
   readonly stringToken: "-";
 }
 
 type Token =
-  | Tagged<"integer", IntegerToken>
+  | Tagged<"nonnegativeInteger", NonnegativeIntegerToken>
   | Tagged<"die", DieToken>
   | Tagged<"whitespace", WhitespaceToken>
   | Tagged<"plusSign", PlusSignToken>

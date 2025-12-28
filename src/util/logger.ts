@@ -16,6 +16,15 @@ export class ContextLogger implements Logger {
   info(...data: unknown[]): void {
     this.basicLogger.info(...followEachWith(this.context, SEPARATOR), ...data);
   }
+
+  warn(...data: unknown[]): void {
+    this.basicLogger.warn(
+      ...followEachWith(this.context, SEPARATOR),
+      "WARNING:",
+      ...data,
+    );
+  }
+
   error(...data: unknown[]): void {
     this.basicLogger.error(
       ...followEachWith(this.context, SEPARATOR),

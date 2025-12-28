@@ -1,4 +1,4 @@
-type Tagged<TagType, DataType = undefined> = DataType extends undefined
+type Tagged<TagType, DataType = undefined> = [DataType] extends [undefined]
   ? { readonly tag: TagType }
   : { readonly tag: TagType; readonly data: DataType };
 

@@ -49,7 +49,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
     assert.strictEqual(tokenizeResult.data.length, 1);
-    assert.strictEqual(tokenizeResult.data[0].tag, "integer");
+    assert.strictEqual(tokenizeResult.data[0].tag, "nonnegativeInteger");
     assert.strictEqual(tokenizeResult.data[0].data.numericValue, 12342500);
     assert.strictEqual(tokenizeResult.data[0].data.stringToken, "0012342500");
   });

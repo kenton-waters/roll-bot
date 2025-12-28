@@ -2,7 +2,7 @@ import type Tagged from "../generic/tagged.js";
 import type Token from "../lexing-parsing/token.js";
 
 interface TokenizationFailure {
-  readonly inputString: string;
+  readonly tokenizedInput: string;
   readonly failurePosition: number;
   readonly untokenizableRemnant: string;
 }

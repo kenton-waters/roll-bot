@@ -1,19 +1,21 @@
 import { Client, Events } from "discord.js";
 import type Logger from "../models/logger.js";
 import handleMessage from "./handle-message.js";
+import tokenize from "./lexing-parsing/tokenize.js";
+import parse from "./lexing-parsing/parse.js";
+import { evaluate } from "../util/tree-helpers.js";
 
 interface StartBotParams {
   readonly discordClient: Client;
   readonly discordToken: string;
   readonly deps: {
-    readonly handleMessage: typeof handleMessage;
     readonly prevLogger: Logger;
   };
 }
 export const startBot = async ({
   discordClient,
   discordToken,
-  deps: { handleMessage, prevLogger },
+  deps: { prevLogger },
 }: StartBotParams): Promise<void> => {
   const startBotLogger = prevLogger.logWithNew(
     "discord",
@@ -47,7 +49,7 @@ export const startBot = async ({
         authorUserId: message.author.id,
         content: message.content,
       },
-      deps: { prevLogger: messageLogger },
+      deps: { tokenize, parse, evaluate, prevLogger: messageLogger },
     });
 
     if (result.tag === "doNotReply") {
