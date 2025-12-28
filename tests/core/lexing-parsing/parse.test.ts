@@ -4,12 +4,11 @@ import { nullLogger } from "../../util.js";
 import TokenizeResult from "../../../src/models/results/tokenize-result.js";
 import tokenize from "../../../src/core/lexing-parsing/tokenize.js";
 import parse from "../../../src/core/lexing-parsing/parse.js";
-import ParseResult from "../../../src/models/results/parse-result.js";
 
 void describe("parse", () => {
-  void test("consecutive integers; unparseableInput at position 5", () => {
+  void test("empty input; success", () => {
     // Arrange
-    const inputString = " 010 050 ";
+    const inputString = "";
 
     // Act
     const tokenizeResult: TokenizeResult = tokenize({
@@ -19,15 +18,18 @@ void describe("parse", () => {
 
     assert.strictEqual(tokenizeResult.tag, "success");
 
-    const parseResult: ParseResult = parse({
+    const parseResult = parse({
       tokens: tokenizeResult.data,
       deps: { prevLogger: nullLogger },
     });
 
     // Assert
-    assert.strictEqual(parseResult.tag, "unparseableInput");
-    assert.strictEqual(parseResult.data.parsedInput, " 010 ");
-    assert.strictEqual(parseResult.data.failurePosition, 5);
-    assert.strictEqual(parseResult.data.unparseableRemnant, "050 ");
+    assert.strictEqual(parseResult.tag, "success");
+    assert.strictEqual(
+      parseResult.data.parsedObject.initialWhitespaceToken,
+      undefined,
+    );
+    assert.strictEqual(parseResult.data.parsedObject.expression, undefined);
+    assert.strictEqual(parseResult.data.remainingTokens.length, 0);
   });
 });

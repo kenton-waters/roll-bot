@@ -1,12 +1,20 @@
 import type Tagged from "../generic/tagged.js";
+import type Token from "../lexing-parsing/token.js";
 
-interface ParseFailure {
-  readonly message: string;
-  readonly parsedInput: string;
-  readonly failurePosition: number;
-  readonly unparseableRemnant: string;
+interface RemainingTokens {
+  readonly remainingTokens: Token[];
 }
 
-type ParseResult = Tagged<"unparseableInput", ParseFailure>;
+interface SuccessData<ParseTo> extends RemainingTokens {
+  readonly parsedObject: ParseTo;
+}
+
+interface FailureData extends RemainingTokens {
+  readonly reason: string;
+}
+
+type ParseResult<ParseTo> =
+  | Tagged<"success", SuccessData<ParseTo>>
+  | Tagged<"failure", FailureData>;
 
 export type { ParseResult as default };
