@@ -24,24 +24,28 @@ const parse = ({
   tokens,
   deps: { prevLogger },
 }: ParseParams): ParseResult<ParseTree> => {
-  prevLogger.logWithNew("parse", "Parsing tokens:", tokens);
+  const logger = prevLogger.logWithNew("parse", "Parsing tokens:", tokens);
 
   const parseTreeResult = parseTree(tokens);
 
   switch (parseTreeResult.tag) {
     case "failure":
+      logger.warn(parseTreeResult);
       return parseTreeResult;
 
-    case "success":
+    case "success": {
       if (parseTreeResult.data.remainingTokens.length === 0)
         return parseTreeResult;
-      return {
+      const notExhausted: ParseResult<ParseTree> = {
         tag: "failure",
         data: {
           reason: "Parsing did not exhaust tokens.",
           remainingTokens: parseTreeResult.data.remainingTokens,
         },
       };
+      logger.warn(notExhausted);
+      return notExhausted;
+    }
   }
 };
 
