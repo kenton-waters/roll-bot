@@ -57,8 +57,8 @@ export const startBot = async ({
       return;
     }
 
-    messageLogger.info("Replying with:", result.data);
-    void message.reply(result.data);
+    messageLogger.info("Replying with:", result.string);
+    void message.reply(result.string);
   });
 
   startBotLogger.info("Logging in...");
