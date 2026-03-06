@@ -4,6 +4,8 @@ type Tagged<TagType, ContentType = undefined> = {
   ? object // We will not add any properties for an undefined ContentType
   : [ContentType] extends [null]
     ? { readonly null: ContentType }
-    : { readonly tag: TagType; readonly data: ContentType });
+    : [ContentType] extends [string]
+      ? { readonly string: ContentType }
+      : { readonly tag: TagType; readonly data: ContentType });
 
 export type { Tagged as default };

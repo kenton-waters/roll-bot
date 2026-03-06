@@ -57,13 +57,13 @@ const handleMessage = ({
       logger.error(tokenizationResult);
       return {
         tag: "reply",
-        data: stringify(tokenizationResult),
+        string: stringify(tokenizationResult),
       };
     case "untokenizableInput":
       logger.warn(tokenizationResult);
       return {
         tag: "reply",
-        data: stringify(tokenizationResult),
+        string: stringify(tokenizationResult),
       };
     case "success": {
       logger.info("Tokenization successful. Parsing...");
@@ -80,7 +80,7 @@ const handleMessage = ({
           logger.warn(parseResult);
           return {
             tag: "reply",
-            data: stringify(parseResult),
+            string: stringify(parseResult),
           };
         case "success": {
           logger.info("Parsing successful. Evaluating total...");
@@ -88,7 +88,7 @@ const handleMessage = ({
           logger.info("Evaluation successful. Replying with total", total);
           return {
             tag: "reply",
-            data: total.toString(),
+            string: total.toString(),
           };
         }
       }
