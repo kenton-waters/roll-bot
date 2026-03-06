@@ -2,6 +2,6 @@
   "recommendations": [
     "dbaeumer.vscode-eslint",
     "jnoortheen.nix-ide",
-    "prettier.prettier-vscode"
+    "esbenp.prettier-vscode"
   ]
 }
