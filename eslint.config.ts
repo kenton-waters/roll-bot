@@ -20,6 +20,19 @@ export default defineConfig(
     },
   },
 
+  {
+    rules: {
+      "@typescript-eslint/switch-exhaustiveness-check": [
+        "error",
+        {
+          allowDefaultCaseForExhaustiveSwitch: false,
+          considerDefaultExhaustiveForUnions: false,
+          requireDefaultForNonUnion: true,
+        },
+      ],
+    },
+  },
+
   // Disables ESLint rules that conflict with Prettier:
   eslintConfigPrettier,
 );
