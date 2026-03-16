@@ -12,8 +12,8 @@ type Tagged<TagType, ContentType = undefined> = {
           ? { readonly bigint: ContentType }
           : [ContentType] extends [symbol]
             ? { readonly symbol: ContentType }
-            : "tag" extends keyof [ContentType]
-              ? { readonly content: ContentType }
+            : [ContentType] extends [{ tag: unknown }]
+              ? { readonly data: ContentType }
               : { readonly data: ContentType });
 
 export type { Tagged as default };
