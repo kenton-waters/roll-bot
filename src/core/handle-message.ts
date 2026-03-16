@@ -33,13 +33,13 @@ const handleMessage = ({
 
   if (rollBotUserId === undefined) {
     logger.error("rollBotUserId is undefined. Do not reply.");
-    return { tag: "doNotReply" };
+    return { type: "doNotReply" };
   }
 
   logger.info("Checking whether message was sent by roll-bot...");
   if (message.authorUserId === rollBotUserId) {
     logger.info("Message is from roll-bot. Do not reply.");
-    return { tag: "doNotReply" };
+    return { type: "doNotReply" };
   }
 
   logger.info(
@@ -52,17 +52,17 @@ const handleMessage = ({
       prevLogger: logger,
     },
   });
-  switch (tokenizationResult.tag) {
+  switch (tokenizationResult.type) {
     case "implementationError":
       logger.error(tokenizationResult);
       return {
-        tag: "reply",
+        type: "reply",
         string: stringify(tokenizationResult),
       };
     case "untokenizableInput":
       logger.warn(tokenizationResult);
       return {
-        tag: "reply",
+        type: "reply",
         string: stringify(tokenizationResult),
       };
     case "success": {
@@ -75,11 +75,11 @@ const handleMessage = ({
         },
       });
 
-      switch (parseResult.tag) {
+      switch (parseResult.type) {
         case "failure":
           logger.warn(parseResult);
           return {
-            tag: "reply",
+            type: "reply",
             string: stringify(parseResult),
           };
         case "success": {
@@ -87,7 +87,7 @@ const handleMessage = ({
           const total = evaluate(parseResult.parsedObject);
           logger.info("Evaluation successful. Replying with total", total);
           return {
-            tag: "reply",
+            type: "reply",
             string: total.toString(),
           };
         }

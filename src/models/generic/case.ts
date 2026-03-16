@@ -1,25 +1,25 @@
-type Case<TagType, PayloadType = undefined> = {
-  readonly tag: TagType; // All instances will have the tag property
-} & ([PayloadType] extends [undefined | null]
-  ? object // We will not add any properties for an undefined or null PayloadType
-  : [PayloadType] extends [string]
-    ? { readonly string: PayloadType }
-    : [PayloadType] extends [number]
-      ? { readonly number: PayloadType }
-      : [PayloadType] extends [boolean]
-        ? { readonly boolean: PayloadType }
-        : [PayloadType] extends [bigint]
-          ? { readonly bigint: PayloadType }
-          : [PayloadType] extends [symbol]
-            ? { readonly symbol: PayloadType }
-            : [PayloadType] extends [unknown[]]
-              ? { readonly array: PayloadType }
-              : [PayloadType] extends [{ tag: unknown }]
-                ? { readonly payload: PayloadType }
-                : PayloadType);
+type Case<CaseName, DataType = undefined> = {
+  readonly type: CaseName; // All instances will have the type property
+} & ([DataType] extends [undefined | null]
+  ? object // We will not add any properties for an undefined or null DataType
+  : [DataType] extends [string]
+    ? { readonly string: DataType }
+    : [DataType] extends [number]
+      ? { readonly number: DataType }
+      : [DataType] extends [boolean]
+        ? { readonly boolean: DataType }
+        : [DataType] extends [bigint]
+          ? { readonly bigint: DataType }
+          : [DataType] extends [symbol]
+            ? { readonly symbol: DataType }
+            : [DataType] extends [unknown[]]
+              ? { readonly array: DataType }
+              : [DataType] extends [{ type: unknown }]
+                ? { readonly data: DataType }
+                : DataType);
 
 /*interface Pretagged {
-  tag: number;
+  type: number;
   otherProp: string;
 }
 
@@ -29,19 +29,19 @@ interface Nontagged {
 }
 
 type Example =
-  | Tagged<"undefined">
-  | Tagged<"null", null>
-  | Tagged<"string", string>
-  | Tagged<"number", number>
-  | Tagged<"boolean", boolean>
-  | Tagged<"bigint", bigint>
-  | Tagged<"symbol", symbol>
-  | Tagged<"pretagged", Pretagged>
-  | Tagged<"nontagged", Nontagged>;
+  | Case<"undefined">
+  | Case<"null", null>
+  | Case<"string", string>
+  | Case<"number", number>
+  | Case<"boolean", boolean>
+  | Case<"bigint", bigint>
+  | Case<"symbol", symbol>
+  | Case<"pretagged", Pretagged>
+  | Case<"nontagged", Nontagged>;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function Consume(param: Example) {
-  switch (param.tag) {
+  switch (param.type) {
     case "undefined":
       // no properties to log
       break;
@@ -64,12 +64,12 @@ function Consume(param: Example) {
       console.log(param.symbol);
       break;
     case "pretagged":
-      console.log(param.data.tag);
+      console.log(param.data);
       console.log(param.data.otherProp);
       break;
     case "nontagged":
-      console.log(param.data.otherProp1);
-      console.log(param.data.otherProp2);
+      console.log(param.otherProp1);
+      console.log(param.otherProp2);
       break;
   }
 }*/

@@ -28,7 +28,7 @@ const parse = ({
 
   const parseTreeResult = parseTree(tokens);
 
-  switch (parseTreeResult.tag) {
+  switch (parseTreeResult.type) {
     case "failure":
       logger.warn(parseTreeResult);
       return parseTreeResult;
@@ -36,7 +36,7 @@ const parse = ({
     case "success": {
       if (parseTreeResult.remainingTokens.length === 0) return parseTreeResult;
       const notExhausted: ParseResult<ParseTree> = {
-        tag: "failure",
+        type: "failure",
         reason: "Parsing did not exhaust tokens.",
         remainingTokens: parseTreeResult.remainingTokens,
       };
@@ -54,10 +54,10 @@ const parseTree = (tokens: Token[]): ParseResult<ParseTree> => {
     remainingTokens: postInitialWhitespaceTokens,
   } = parseOptionalWhitespace(tokens);
   const parseExpressionResult = parseExpression(postInitialWhitespaceTokens);
-  switch (parseExpressionResult.tag) {
+  switch (parseExpressionResult.type) {
     case "failure":
       return {
-        tag: "success",
+        type: "success",
         parsedObject: {
           initialWhitespaceToken,
           expression: null,
@@ -66,7 +66,7 @@ const parseTree = (tokens: Token[]): ParseResult<ParseTree> => {
       };
     case "success":
       return {
-        tag: "success",
+        type: "success",
         parsedObject: {
           initialWhitespaceToken,
           expression: parseExpressionResult.parsedObject,
@@ -79,7 +79,7 @@ const parseTree = (tokens: Token[]): ParseResult<ParseTree> => {
 const parseOptionalWhitespace = (
   tokens: Token[],
 ): ParseSuccess<WhitespaceToken | null> => {
-  if (tokens[0]?.tag !== "whitespace") {
+  if (tokens[0]?.type !== "whitespace") {
     return {
       parsedObject: null,
       remainingTokens: tokens,
@@ -94,26 +94,26 @@ const parseOptionalWhitespace = (
 
 const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
   const parseAdditionOrSubtractionResult = parseAdditionOrSubtraction(tokens);
-  if (parseAdditionOrSubtractionResult.tag === "success")
+  if (parseAdditionOrSubtractionResult.type === "success")
     return {
-      tag: "success",
+      type: "success",
       parsedObject: {
-        tag: "additionOrSubtraction",
+        type: "additionOrSubtraction",
         ...parseAdditionOrSubtractionResult.parsedObject,
       },
       remainingTokens: parseAdditionOrSubtractionResult.remainingTokens,
     };
 
   const parseAtomResult = parseAtom(tokens);
-  switch (parseAtomResult.tag) {
+  switch (parseAtomResult.type) {
     case "failure":
       return parseAtomResult;
     case "success":
       return {
-        tag: "success",
+        type: "success",
         parsedObject: {
-          tag: "atom",
-          payload: parseAtomResult.parsedObject,
+          type: "atom",
+          data: parseAtomResult.parsedObject,
         },
         remainingTokens: parseAtomResult.remainingTokens,
       };
@@ -125,7 +125,8 @@ const parseAdditionOrSubtraction = (
 ): ParseResult<AdditionOrSubtraction> => {
   const parseLeftHandAtomResult = parseAtom(tokens);
 
-  if (parseLeftHandAtomResult.tag !== "success") return parseLeftHandAtomResult;
+  if (parseLeftHandAtomResult.type !== "success")
+    return parseLeftHandAtomResult;
 
   const {
     parsedObject: leftHandAtom,
@@ -133,9 +134,9 @@ const parseAdditionOrSubtraction = (
   } = parseLeftHandAtomResult;
 
   const nextToken = postLeftHandAtomTokens[0];
-  if (nextToken?.tag !== "plusSign" && nextToken?.tag !== "minusSign")
+  if (nextToken?.type !== "plusSign" && nextToken?.type !== "minusSign")
     return {
-      tag: "failure",
+      type: "failure",
       reason:
         "Expected '+' or '-' not found while parsing addition or subtraction expression.",
       remainingTokens: postLeftHandAtomTokens,
@@ -149,11 +150,11 @@ const parseAdditionOrSubtraction = (
   } = parseOptionalWhitespace(postLeftHandAtomTokens.slice(1));
 
   const parseRightHandExpressionResult = parseExpression(postOperatorTokens);
-  if (parseRightHandExpressionResult.tag !== "success")
+  if (parseRightHandExpressionResult.type !== "success")
     return parseRightHandExpressionResult;
 
   return {
-    tag: "success",
+    type: "success",
     parsedObject: {
       leftHandAtom,
       operatorToken,
@@ -166,25 +167,25 @@ const parseAdditionOrSubtraction = (
 
 const parseAtom = (tokens: Token[]): ParseResult<Atom> => {
   const parseDiceRollResult = parseDiceRoll(tokens);
-  if (parseDiceRollResult.tag === "success")
+  if (parseDiceRollResult.type === "success")
     return {
-      tag: "success",
+      type: "success",
       parsedObject: {
-        tag: "diceRoll",
+        type: "diceRoll",
         ...parseDiceRollResult.parsedObject,
       },
       remainingTokens: parseDiceRollResult.remainingTokens,
     };
 
   const parseIntegerResult = parseInteger(tokens);
-  switch (parseIntegerResult.tag) {
+  switch (parseIntegerResult.type) {
     case "failure":
       return parseIntegerResult;
     case "success":
       return {
-        tag: "success",
+        type: "success",
         parsedObject: {
-          tag: "integer",
+          type: "integer",
           ...parseIntegerResult.parsedObject,
         },
         remainingTokens: parseIntegerResult.remainingTokens,
@@ -200,9 +201,9 @@ const parseDiceRoll = (tokens: Token[]): ParseResult<DiceRoll> => {
     parseNumDice(postSignTokens);
 
   const nextToken = postNumDiceTokens[0];
-  if (nextToken?.tag !== "die")
+  if (nextToken?.type !== "die")
     return {
-      tag: "failure",
+      type: "failure",
       reason: "Expected 'd' or 'D' not found when parsing diceRoll atom.",
       remainingTokens: postNumDiceTokens,
     };
@@ -214,9 +215,9 @@ const parseDiceRoll = (tokens: Token[]): ParseResult<DiceRoll> => {
   } = parseOptionalWhitespace(postNumDiceTokens.slice(1));
 
   const postDieToken = postDieTokenTokens[0];
-  if (postDieToken?.tag !== "nonnegativeInteger")
+  if (postDieToken?.type !== "nonnegativeInteger")
     return {
-      tag: "failure",
+      type: "failure",
       reason:
         "Expected nonnegative integer not found when parsing diceRoll's number of faces.",
       remainingTokens: postDieTokenTokens,
@@ -225,7 +226,7 @@ const parseDiceRoll = (tokens: Token[]): ParseResult<DiceRoll> => {
   const positiveNumFacesToken = postDieToken;
   if (positiveNumFacesToken.numericValue < 1)
     return {
-      tag: "failure",
+      type: "failure",
       reason: "Number of faces on a die may not be less than 1.",
       remainingTokens: postDieTokenTokens,
     };
@@ -236,7 +237,7 @@ const parseDiceRoll = (tokens: Token[]): ParseResult<DiceRoll> => {
   } = parseOptionalWhitespace(postDieTokenTokens.slice(1));
 
   return {
-    tag: "success",
+    type: "success",
     parsedObject: {
       sign,
       numDice,
@@ -253,7 +254,7 @@ const parseDiceRoll = (tokens: Token[]): ParseResult<DiceRoll> => {
 
 const parseNumDice = (tokens: Token[]): ParseSuccess<NumDice> => {
   const firstToken = tokens[0];
-  if (firstToken?.tag !== "nonnegativeInteger")
+  if (firstToken?.type !== "nonnegativeInteger")
     return {
       parsedObject: {
         numericValue: 1,
@@ -283,9 +284,9 @@ const parseInteger = (tokens: Token[]): ParseResult<Integer> => {
     parseSign(tokens);
 
   const nextToken = postSignTokens[0];
-  if (nextToken?.tag !== "nonnegativeInteger")
+  if (nextToken?.type !== "nonnegativeInteger")
     return {
-      tag: "failure",
+      type: "failure",
       reason:
         "Expected nonnegative integer token not found when parsing integer atom.",
       remainingTokens: postSignTokens,
@@ -297,7 +298,7 @@ const parseInteger = (tokens: Token[]): ParseResult<Integer> => {
     parseOptionalWhitespace(postSignTokens.slice(1));
 
   return {
-    tag: "success",
+    type: "success",
     parsedObject: {
       sign: sign,
       numericValue:
@@ -313,7 +314,7 @@ const parseInteger = (tokens: Token[]): ParseResult<Integer> => {
 
 const parseSign = (tokens: Token[]): ParseSuccess<Sign> => {
   const firstToken = tokens[0];
-  if (firstToken?.tag !== "minusSign" && firstToken?.tag !== "plusSign")
+  if (firstToken?.type !== "minusSign" && firstToken?.type !== "plusSign")
     return {
       parsedObject: {
         signValue: "+",

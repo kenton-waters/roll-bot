@@ -18,7 +18,7 @@ void describe("parse", () => {
       deps: { prevLogger: nullLogger },
     });
 
-    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
       tokens: tokenizeResult.array,
@@ -26,7 +26,7 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.tag, "success");
+    assert.strictEqual(parseResult.type, "success");
     assert.strictEqual(parseResult.parsedObject.initialWhitespaceToken, null);
     assert.strictEqual(parseResult.parsedObject.expression, null);
     assert.strictEqual(parseResult.remainingTokens.length, 0);
@@ -46,7 +46,7 @@ void describe("parse", () => {
       deps: { prevLogger: nullLogger },
     });
 
-    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
       tokens: tokenizeResult.array,
@@ -54,7 +54,7 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.tag, "success");
+    assert.strictEqual(parseResult.type, "success");
     assert.strictEqual(
       parseResult.parsedObject.initialWhitespaceToken?.stringToken,
       "  ",
@@ -71,11 +71,11 @@ void describe("parse", () => {
     // Arrange
     const inputTokens: Token[] = [
       {
-        tag: "whitespace",
+        type: "whitespace",
         stringToken: " ",
       },
       {
-        tag: "whitespace",
+        type: "whitespace",
         stringToken: " ",
       },
     ];
@@ -87,7 +87,7 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.tag, "failure");
+    assert.strictEqual(parseResult.type, "failure");
     assert.strictEqual(parseResult.reason, "Parsing did not exhaust tokens.");
     assert.strictEqual(parseResult.remainingTokens.length, 1);
   });
@@ -102,7 +102,7 @@ void describe("parse", () => {
       deps: { prevLogger: nullLogger },
     });
 
-    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
       tokens: tokenizeResult.array,
@@ -110,31 +110,31 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.tag, "success");
-    assert.strictEqual(parseResult.parsedObject.expression?.tag, "atom");
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(parseResult.parsedObject.expression?.type, "atom");
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.tag,
+      parseResult.parsedObject.expression.data.type,
       "integer",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.sign.signValue,
+      parseResult.parsedObject.expression.data.sign.signValue,
       "+",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.sign.signToken,
+      parseResult.parsedObject.expression.data.sign.signToken,
       null,
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.numericValue,
+      parseResult.parsedObject.expression.data.numericValue,
       3,
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.nonnegativeIntegerToken
+      parseResult.parsedObject.expression.data.nonnegativeIntegerToken
         .stringToken,
       "3",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.followingWhitespaceToken,
+      parseResult.parsedObject.expression.data.followingWhitespaceToken,
       null,
     );
     assert.strictEqual(parseResult.remainingTokens.length, 0);
@@ -154,7 +154,7 @@ void describe("parse", () => {
       deps: { prevLogger: nullLogger },
     });
 
-    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
       tokens: tokenizeResult.array,
@@ -162,31 +162,31 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.tag, "success");
-    assert.strictEqual(parseResult.parsedObject.expression?.tag, "atom");
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(parseResult.parsedObject.expression?.type, "atom");
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.tag,
+      parseResult.parsedObject.expression.data.type,
       "integer",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.sign.signValue,
+      parseResult.parsedObject.expression.data.sign.signValue,
       "-",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.sign.signToken?.stringToken,
+      parseResult.parsedObject.expression.data.sign.signToken?.stringToken,
       "-",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.numericValue,
+      parseResult.parsedObject.expression.data.numericValue,
       -3,
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.nonnegativeIntegerToken
+      parseResult.parsedObject.expression.data.nonnegativeIntegerToken
         .stringToken,
       "3",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.followingWhitespaceToken,
+      parseResult.parsedObject.expression.data.followingWhitespaceToken,
       null,
     );
     assert.strictEqual(parseResult.remainingTokens.length, 0);
@@ -206,7 +206,7 @@ void describe("parse", () => {
       deps: { prevLogger: nullLogger },
     });
 
-    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
       tokens: tokenizeResult.array,
@@ -214,31 +214,31 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.tag, "success");
-    assert.strictEqual(parseResult.parsedObject.expression?.tag, "atom");
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(parseResult.parsedObject.expression?.type, "atom");
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.tag,
+      parseResult.parsedObject.expression.data.type,
       "integer",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.sign.signValue,
+      parseResult.parsedObject.expression.data.sign.signValue,
       "+",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.sign.signToken?.stringToken,
+      parseResult.parsedObject.expression.data.sign.signToken?.stringToken,
       "+",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.numericValue,
+      parseResult.parsedObject.expression.data.numericValue,
       3,
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.nonnegativeIntegerToken
+      parseResult.parsedObject.expression.data.nonnegativeIntegerToken
         .stringToken,
       "3",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.followingWhitespaceToken
+      parseResult.parsedObject.expression.data.followingWhitespaceToken
         ?.stringToken,
       " ",
     );
@@ -259,7 +259,7 @@ void describe("parse", () => {
       deps: { prevLogger: nullLogger },
     });
 
-    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
       tokens: tokenizeResult.array,
@@ -267,51 +267,50 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.tag, "success");
-    assert.strictEqual(parseResult.parsedObject.expression?.tag, "atom");
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(parseResult.parsedObject.expression?.type, "atom");
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.tag,
+      parseResult.parsedObject.expression.data.type,
       "diceRoll",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.sign.signValue,
+      parseResult.parsedObject.expression.data.sign.signValue,
       "-",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.sign.signToken?.stringToken,
+      parseResult.parsedObject.expression.data.sign.signToken?.stringToken,
       "-",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.numDice.numericValue,
+      parseResult.parsedObject.expression.data.numDice.numericValue,
       50,
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.numDice
-        .nonnegativeNumDiceToken?.numericValue,
+      parseResult.parsedObject.expression.data.numDice.nonnegativeNumDiceToken
+        ?.numericValue,
       50,
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.numDice
-        .followingWhitespaceToken?.stringToken,
+      parseResult.parsedObject.expression.data.numDice.followingWhitespaceToken
+        ?.stringToken,
       " ",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.dieSymbol.dieToken
-        .stringToken,
+      parseResult.parsedObject.expression.data.dieSymbol.dieToken.stringToken,
       "D",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.dieSymbol
+      parseResult.parsedObject.expression.data.dieSymbol
         .followingWhitespaceToken?.stringToken,
       " ",
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.positiveNumFacesToken
+      parseResult.parsedObject.expression.data.positiveNumFacesToken
         .numericValue,
       20,
     );
     assert.strictEqual(
-      parseResult.parsedObject.expression.payload.followingWhitespaceToken
+      parseResult.parsedObject.expression.data.followingWhitespaceToken
         ?.stringToken,
       " ",
     );
@@ -332,7 +331,7 @@ void describe("parse", () => {
       deps: { prevLogger: nullLogger },
     });
 
-    assert.strictEqual(tokenizeResult.tag, "success");
+    assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
       tokens: tokenizeResult.array,
@@ -340,9 +339,9 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.tag, "success");
+    assert.strictEqual(parseResult.type, "success");
     assert.strictEqual(
-      parseResult.parsedObject.expression?.tag,
+      parseResult.parsedObject.expression?.type,
       "additionOrSubtraction",
     );
     assert.strictEqual(

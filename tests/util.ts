@@ -18,7 +18,7 @@ export const nullLogger: Logger = {
 
 export const nullTokenize: typeof tokenize = () => {
   return {
-    tag: "implementationError",
+    type: "implementationError",
     message: "",
     tokenizedInput: "",
     failurePosition: 0,

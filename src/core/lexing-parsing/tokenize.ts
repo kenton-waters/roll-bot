@@ -28,7 +28,7 @@ const tokenize = ({
 
   const go = (remainingInput: string, pastTokens: Token[]): TokenizeResult => {
     if (remainingInput.length === 0)
-      return { tag: "success", array: pastTokens };
+      return { type: "success", array: pastTokens };
 
     const nonnegativeIntegerMatch = remainingInput.match(nonnegativeInteger);
     if (nonnegativeIntegerMatch) {
@@ -36,7 +36,7 @@ const tokenize = ({
       return go(remainingInput.slice(stringToken.length), [
         ...pastTokens,
         {
-          tag: "nonnegativeInteger",
+          type: "nonnegativeInteger",
           numericValue: parseInt(stringToken),
           stringToken: stringToken,
         },
@@ -49,7 +49,7 @@ const tokenize = ({
       if (stringToken !== "D" && stringToken !== "d") {
         const reconstructedInputString = reconstructInputString(pastTokens);
         const err: TokenizeResult = {
-          tag: "implementationError",
+          type: "implementationError",
           message: `String ${stringToken} was tokenized as "die" but is neither "D" nor "d"`,
           tokenizedInput: reconstructedInputString,
           failurePosition: reconstructedInputString.length,
@@ -62,7 +62,7 @@ const tokenize = ({
       return go(remainingInput.slice(stringToken.length), [
         ...pastTokens,
         {
-          tag: "die",
+          type: "die",
           stringToken: stringToken,
         },
       ]);
@@ -73,7 +73,7 @@ const tokenize = ({
       return go(remainingInput.slice(plusSignMatch[0].length), [
         ...pastTokens,
         {
-          tag: "plusSign",
+          type: "plusSign",
           stringToken: "+",
         },
       ]);
@@ -84,7 +84,7 @@ const tokenize = ({
       return go(remainingInput.slice(minusSignMatch[0].length), [
         ...pastTokens,
         {
-          tag: "minusSign",
+          type: "minusSign",
           stringToken: "-",
         },
       ]);
@@ -96,7 +96,7 @@ const tokenize = ({
       return go(remainingInput.slice(stringToken.length), [
         ...pastTokens,
         {
-          tag: "whitespace",
+          type: "whitespace",
           stringToken: stringToken,
         },
       ]);
@@ -104,7 +104,7 @@ const tokenize = ({
 
     const reconstructedInputString = reconstructInputString(pastTokens);
     return {
-      tag: "untokenizableInput",
+      type: "untokenizableInput",
       tokenizedInput: reconstructedInputString,
       failurePosition: reconstructedInputString.length,
       untokenizableRemnant: remainingInput,
