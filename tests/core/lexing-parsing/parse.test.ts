@@ -1,10 +1,10 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { nullLogger } from "../../util.js";
-import TokenizeResult from "../../../src/models/results/tokenize-result.js";
+import type TokenizeResult from "../../../src/models/results/tokenize-result.js";
 import tokenize from "../../../src/core/lexing-parsing/tokenize.js";
 import parse from "../../../src/core/lexing-parsing/parse.js";
-import Token from "../../../src/models/lexing-parsing/token.js";
+import type Token from "../../../src/models/lexing-parsing/token.js";
 import { reconstructInputString } from "../../../src/util/tree-helpers.js";
 
 void describe("parse", () => {

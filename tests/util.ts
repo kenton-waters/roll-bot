@@ -1,5 +1,5 @@
 import tokenize from "../src/core/lexing-parsing/tokenize.js";
-import Logger from "../src/models/logger.js";
+import type Logger from "../src/models/logger.js";
 
 export const nullLogger: Logger = {
   info: function (): void {

@@ -1,7 +1,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { nullLogger } from "../../util.js";
-import TokenizeResult from "../../../src/models/results/tokenize-result.js";
+import type TokenizeResult from "../../../src/models/results/tokenize-result.js";
 import tokenize from "../../../src/core/lexing-parsing/tokenize.js";
 
 void describe("tokenize", () => {
@@ -49,7 +49,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
     assert.strictEqual(tokenizeResult.payload.length, 1);
-    assert.strictEqual(tokenizeResult.payload[0].tag, "nonnegativeInteger");
+    assert.strictEqual(tokenizeResult.payload[0]?.tag, "nonnegativeInteger");
     assert.strictEqual(
       tokenizeResult.payload[0].payload.numericValue,
       12342500,
@@ -89,7 +89,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
     assert.strictEqual(tokenizeResult.payload.length, 3);
-    assert.strictEqual(tokenizeResult.payload[1].tag, "die");
+    assert.strictEqual(tokenizeResult.payload[1]?.tag, "die");
     assert.strictEqual(tokenizeResult.payload[1].payload.stringToken, "d");
   });
 
@@ -106,7 +106,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
     assert.strictEqual(tokenizeResult.payload.length, 3);
-    assert.strictEqual(tokenizeResult.payload[1].tag, "die");
+    assert.strictEqual(tokenizeResult.payload[1]?.tag, "die");
     assert.strictEqual(tokenizeResult.payload[1].payload.stringToken, "D");
   });
 
@@ -123,7 +123,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
     assert.strictEqual(tokenizeResult.payload.length, 1);
-    assert.strictEqual(tokenizeResult.payload[0].tag, "whitespace");
+    assert.strictEqual(tokenizeResult.payload[0]?.tag, "whitespace");
     assert.strictEqual(
       tokenizeResult.payload[0].payload.stringToken,
       "   \t  \n  ",
@@ -143,7 +143,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
     assert.strictEqual(tokenizeResult.payload.length, 11);
-    assert.strictEqual(tokenizeResult.payload[7].tag, "plusSign");
+    assert.strictEqual(tokenizeResult.payload[7]?.tag, "plusSign");
     assert.strictEqual(tokenizeResult.payload[7].payload.stringToken, "+");
   });
 
@@ -160,7 +160,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
     assert.strictEqual(tokenizeResult.payload.length, 11);
-    assert.strictEqual(tokenizeResult.payload[7].tag, "minusSign");
+    assert.strictEqual(tokenizeResult.payload[7]?.tag, "minusSign");
     assert.strictEqual(tokenizeResult.payload[7].payload.stringToken, "-");
   });
 });
