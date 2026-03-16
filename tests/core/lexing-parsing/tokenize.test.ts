@@ -17,8 +17,8 @@ void describe("tokenize", () => {
 
     // Assert
     assert.strictEqual(tokenizeResult.tag, "untokenizableInput");
-    assert.strictEqual(tokenizeResult.data.untokenizableRemnant, "xABC");
-    assert.strictEqual(tokenizeResult.data.failurePosition, 0);
+    assert.strictEqual(tokenizeResult.payload.untokenizableRemnant, "xABC");
+    assert.strictEqual(tokenizeResult.payload.failurePosition, 0);
   });
 
   void test("empty input; success; empty tokens array", () => {
@@ -33,7 +33,7 @@ void describe("tokenize", () => {
 
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
-    assert.strictEqual(tokenizeResult.data.length, 0);
+    assert.strictEqual(tokenizeResult.payload.length, 0);
   });
 
   void test("integer input; success; one integer token", () => {
@@ -48,10 +48,16 @@ void describe("tokenize", () => {
 
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
-    assert.strictEqual(tokenizeResult.data.length, 1);
-    assert.strictEqual(tokenizeResult.data[0].tag, "nonnegativeInteger");
-    assert.strictEqual(tokenizeResult.data[0].data.numericValue, 12342500);
-    assert.strictEqual(tokenizeResult.data[0].data.stringToken, "0012342500");
+    assert.strictEqual(tokenizeResult.payload.length, 1);
+    assert.strictEqual(tokenizeResult.payload[0].tag, "nonnegativeInteger");
+    assert.strictEqual(
+      tokenizeResult.payload[0].payload.numericValue,
+      12342500,
+    );
+    assert.strictEqual(
+      tokenizeResult.payload[0].payload.stringToken,
+      "0012342500",
+    );
   });
 
   void test("unexpectedCharacter; at position 5", () => {
@@ -66,8 +72,8 @@ void describe("tokenize", () => {
 
     // Assert
     assert.strictEqual(tokenizeResult.tag, "untokenizableInput");
-    assert.strictEqual(tokenizeResult.data.untokenizableRemnant, "x6789");
-    assert.strictEqual(tokenizeResult.data.failurePosition, 5);
+    assert.strictEqual(tokenizeResult.payload.untokenizableRemnant, "x6789");
+    assert.strictEqual(tokenizeResult.payload.failurePosition, 5);
   });
 
   void test("1d20; success; three tokens", () => {
@@ -82,9 +88,9 @@ void describe("tokenize", () => {
 
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
-    assert.strictEqual(tokenizeResult.data.length, 3);
-    assert.strictEqual(tokenizeResult.data[1].tag, "die");
-    assert.strictEqual(tokenizeResult.data[1].data.stringToken, "d");
+    assert.strictEqual(tokenizeResult.payload.length, 3);
+    assert.strictEqual(tokenizeResult.payload[1].tag, "die");
+    assert.strictEqual(tokenizeResult.payload[1].payload.stringToken, "d");
   });
 
   void test("1D20; success; three tokens", () => {
@@ -99,9 +105,9 @@ void describe("tokenize", () => {
 
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
-    assert.strictEqual(tokenizeResult.data.length, 3);
-    assert.strictEqual(tokenizeResult.data[1].tag, "die");
-    assert.strictEqual(tokenizeResult.data[1].data.stringToken, "D");
+    assert.strictEqual(tokenizeResult.payload.length, 3);
+    assert.strictEqual(tokenizeResult.payload[1].tag, "die");
+    assert.strictEqual(tokenizeResult.payload[1].payload.stringToken, "D");
   });
 
   void test("whitespace input; success", () => {
@@ -116,9 +122,12 @@ void describe("tokenize", () => {
 
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
-    assert.strictEqual(tokenizeResult.data.length, 1);
-    assert.strictEqual(tokenizeResult.data[0].tag, "whitespace");
-    assert.strictEqual(tokenizeResult.data[0].data.stringToken, "   \t  \n  ");
+    assert.strictEqual(tokenizeResult.payload.length, 1);
+    assert.strictEqual(tokenizeResult.payload[0].tag, "whitespace");
+    assert.strictEqual(
+      tokenizeResult.payload[0].payload.stringToken,
+      "   \t  \n  ",
+    );
   });
 
   void test("addition input; success", () => {
@@ -133,9 +142,9 @@ void describe("tokenize", () => {
 
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
-    assert.strictEqual(tokenizeResult.data.length, 11);
-    assert.strictEqual(tokenizeResult.data[7].tag, "plusSign");
-    assert.strictEqual(tokenizeResult.data[7].data.stringToken, "+");
+    assert.strictEqual(tokenizeResult.payload.length, 11);
+    assert.strictEqual(tokenizeResult.payload[7].tag, "plusSign");
+    assert.strictEqual(tokenizeResult.payload[7].payload.stringToken, "+");
   });
 
   void test("subtraction input; success", () => {
@@ -150,8 +159,8 @@ void describe("tokenize", () => {
 
     // Assert
     assert.strictEqual(tokenizeResult.tag, "success");
-    assert.strictEqual(tokenizeResult.data.length, 11);
-    assert.strictEqual(tokenizeResult.data[7].tag, "minusSign");
-    assert.strictEqual(tokenizeResult.data[7].data.stringToken, "-");
+    assert.strictEqual(tokenizeResult.payload.length, 11);
+    assert.strictEqual(tokenizeResult.payload[7].tag, "minusSign");
+    assert.strictEqual(tokenizeResult.payload[7].payload.stringToken, "-");
   });
 });

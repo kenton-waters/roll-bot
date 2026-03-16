@@ -1,20 +1,20 @@
-type Tagged<TagType, ContentType = undefined> = {
+type Case<TagType, PayloadType = undefined> = {
   readonly tag: TagType; // All instances will have the tag property
-} & ([ContentType] extends [undefined | null]
-  ? object // We will not add any properties for an undefined or null ContentType
-  : [ContentType] extends [string]
-    ? { readonly string: ContentType }
-    : [ContentType] extends [number]
-      ? { readonly number: ContentType }
-      : [ContentType] extends [boolean]
-        ? { readonly boolean: ContentType }
-        : [ContentType] extends [bigint]
-          ? { readonly bigint: ContentType }
-          : [ContentType] extends [symbol]
-            ? { readonly symbol: ContentType }
-            : [ContentType] extends [{ tag: unknown }]
-              ? { readonly data: ContentType }
-              : { readonly data: ContentType });
+} & ([PayloadType] extends [undefined | null]
+  ? object // We will not add any properties for an undefined or null PayloadType
+  : [PayloadType] extends [string]
+    ? { readonly string: PayloadType }
+    : [PayloadType] extends [number]
+      ? { readonly number: PayloadType }
+      : [PayloadType] extends [boolean]
+        ? { readonly boolean: PayloadType }
+        : [PayloadType] extends [bigint]
+          ? { readonly bigint: PayloadType }
+          : [PayloadType] extends [symbol]
+            ? { readonly symbol: PayloadType }
+            : [PayloadType] extends [{ tag: unknown }]
+              ? { readonly payload: PayloadType }
+              : { readonly payload: PayloadType });
 
 /*interface Pretagged {
   tag: number;
@@ -72,4 +72,4 @@ function Consume(param: Example) {
   }
 }*/
 
-export type { Tagged as default };
+export type { Case as default };

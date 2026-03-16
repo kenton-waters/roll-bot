@@ -30,18 +30,18 @@ export const evaluate = (parseTree: ParseTree): number => {
   const evaluateAtom = (atom: Atom): number => {
     switch (atom.tag) {
       case "integer":
-        return atom.data.numericValue;
+        return atom.payload.numericValue;
       case "diceRoll":
-        return evaluateDiceRoll(atom.data);
+        return evaluateDiceRoll(atom.payload);
     }
   };
 
   const evaluateExpression = (expression: Expression): number => {
     switch (expression.tag) {
       case "atom":
-        return evaluateAtom(expression.data);
+        return evaluateAtom(expression.payload);
       case "additionOrSubtraction":
-        return evaluateAdditionOrSubtraction(expression.data);
+        return evaluateAdditionOrSubtraction(expression.payload);
     }
   };
 
@@ -60,13 +60,13 @@ export const evaluate = (parseTree: ParseTree): number => {
   const evaluateSingleAtom = (atom: Atom): number => {
     switch (atom.tag) {
       case "diceRoll":
-        return evaluateDiceRoll(atom.data);
+        return evaluateDiceRoll(atom.payload);
       case "integer":
         // 1d20 + integer atom
         return evaluateAdditionOrSubtraction({
           leftHandAtom: {
             tag: "diceRoll",
-            data: {
+            payload: {
               sign: {
                 signValue: "+",
                 signToken: null,
@@ -95,7 +95,7 @@ export const evaluate = (parseTree: ParseTree): number => {
           },
           rightHandExpression: {
             tag: "atom",
-            data: atom,
+            payload: atom,
           },
           followingWhitespaceToken: null,
         });
@@ -104,14 +104,14 @@ export const evaluate = (parseTree: ParseTree): number => {
 
   switch (parseTree.expression?.tag) {
     case "additionOrSubtraction":
-      return evaluateAdditionOrSubtraction(parseTree.expression.data);
+      return evaluateAdditionOrSubtraction(parseTree.expression.payload);
     case "atom":
-      return evaluateSingleAtom(parseTree.expression.data);
+      return evaluateSingleAtom(parseTree.expression.payload);
     case undefined:
       // 1d20 + 0
       return evaluateSingleAtom({
         tag: "integer",
-        data: {
+        payload: {
           sign: {
             signValue: "+",
             signToken: null,
@@ -142,9 +142,9 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
 
     switch (expression.tag) {
       case "additionOrSubtraction":
-        return reconstructAdditionOrSubtractionInputString(expression.data);
+        return reconstructAdditionOrSubtractionInputString(expression.payload);
       case "atom":
-        return reconstructAtomInputString(expression.data);
+        return reconstructAtomInputString(expression.payload);
     }
   };
 
@@ -166,9 +166,9 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
   const reconstructAtomInputString = (atom: Atom): string => {
     switch (atom.tag) {
       case "integer":
-        return reconstructIntegerInputString(atom.data);
+        return reconstructIntegerInputString(atom.payload);
       case "diceRoll":
-        return reconstructDiceRollInputString(atom.data);
+        return reconstructDiceRollInputString(atom.payload);
     }
   };
 

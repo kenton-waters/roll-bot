@@ -28,7 +28,7 @@ const tokenize = ({
 
   const go = (remainingInput: string, pastTokens: Token[]): TokenizeResult => {
     if (remainingInput.length === 0)
-      return { tag: "success", data: pastTokens };
+      return { tag: "success", payload: pastTokens };
 
     const nonnegativeIntegerMatch = remainingInput.match(nonnegativeInteger);
     if (nonnegativeIntegerMatch) {
@@ -37,7 +37,7 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "nonnegativeInteger",
-          data: {
+          payload: {
             numericValue: parseInt(stringToken),
             stringToken: stringToken,
           },
@@ -52,7 +52,7 @@ const tokenize = ({
         const reconstructedInputString = reconstructInputString(pastTokens);
         const err: TokenizeResult = {
           tag: "implementationError",
-          data: {
+          payload: {
             message: `String ${stringToken} was tokenized as "die" but is neither "D" nor "d"`,
             tokenizedInput: reconstructedInputString,
             failurePosition: reconstructedInputString.length,
@@ -67,7 +67,7 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "die",
-          data: {
+          payload: {
             stringToken: stringToken,
           },
         },
@@ -80,7 +80,7 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "plusSign",
-          data: {
+          payload: {
             stringToken: "+",
           },
         },
@@ -93,7 +93,7 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "minusSign",
-          data: {
+          payload: {
             stringToken: "-",
           },
         },
@@ -107,7 +107,7 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "whitespace",
-          data: {
+          payload: {
             stringToken: stringToken,
           },
         },
@@ -117,7 +117,7 @@ const tokenize = ({
     const reconstructedInputString = reconstructInputString(pastTokens);
     return {
       tag: "untokenizableInput",
-      data: {
+      payload: {
         tokenizedInput: reconstructedInputString,
         failurePosition: reconstructedInputString.length,
         untokenizableRemnant: remainingInput,
