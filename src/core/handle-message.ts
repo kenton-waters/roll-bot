@@ -69,7 +69,7 @@ const handleMessage = ({
       logger.info("Tokenization successful. Parsing...");
 
       const parseResult = parse({
-        tokens: tokenizationResult.payload,
+        tokens: tokenizationResult.array,
         deps: {
           prevLogger: logger,
         },
@@ -84,7 +84,7 @@ const handleMessage = ({
           };
         case "success": {
           logger.info("Parsing successful. Evaluating total...");
-          const total = evaluate(parseResult.payload.parsedObject);
+          const total = evaluate(parseResult.parsedObject);
           logger.info("Evaluation successful. Replying with total", total);
           return {
             tag: "reply",

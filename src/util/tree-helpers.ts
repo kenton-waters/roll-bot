@@ -30,9 +30,9 @@ export const evaluate = (parseTree: ParseTree): number => {
   const evaluateAtom = (atom: Atom): number => {
     switch (atom.tag) {
       case "integer":
-        return atom.payload.numericValue;
+        return atom.numericValue;
       case "diceRoll":
-        return evaluateDiceRoll(atom.payload);
+        return evaluateDiceRoll(atom);
     }
   };
 
@@ -41,7 +41,7 @@ export const evaluate = (parseTree: ParseTree): number => {
       case "atom":
         return evaluateAtom(expression.payload);
       case "additionOrSubtraction":
-        return evaluateAdditionOrSubtraction(expression.payload);
+        return evaluateAdditionOrSubtraction(expression);
     }
   };
 
@@ -60,35 +60,33 @@ export const evaluate = (parseTree: ParseTree): number => {
   const evaluateSingleAtom = (atom: Atom): number => {
     switch (atom.tag) {
       case "diceRoll":
-        return evaluateDiceRoll(atom.payload);
+        return evaluateDiceRoll(atom);
       case "integer":
         // 1d20 + integer atom
         return evaluateAdditionOrSubtraction({
           leftHandAtom: {
             tag: "diceRoll",
-            payload: {
-              sign: {
-                signValue: "+",
-                signToken: null,
-                followingWhitespaceToken: null,
-              },
-              numDice: {
-                nonnegativeNumDiceToken: null,
-                numericValue: 1,
-                followingWhitespaceToken: null,
-              },
-              dieSymbol: {
-                dieToken: {
-                  stringToken: "d",
-                },
-                followingWhitespaceToken: null,
-              },
-              positiveNumFacesToken: {
-                numericValue: 20,
-                stringToken: "",
+            sign: {
+              signValue: "+",
+              signToken: null,
+              followingWhitespaceToken: null,
+            },
+            numDice: {
+              nonnegativeNumDiceToken: null,
+              numericValue: 1,
+              followingWhitespaceToken: null,
+            },
+            dieSymbol: {
+              dieToken: {
+                stringToken: "d",
               },
               followingWhitespaceToken: null,
             },
+            positiveNumFacesToken: {
+              numericValue: 20,
+              stringToken: "",
+            },
+            followingWhitespaceToken: null,
           },
           operatorToken: {
             stringToken: "+",
@@ -104,26 +102,24 @@ export const evaluate = (parseTree: ParseTree): number => {
 
   switch (parseTree.expression?.tag) {
     case "additionOrSubtraction":
-      return evaluateAdditionOrSubtraction(parseTree.expression.payload);
+      return evaluateAdditionOrSubtraction(parseTree.expression);
     case "atom":
       return evaluateSingleAtom(parseTree.expression.payload);
     case undefined:
       // 1d20 + 0
       return evaluateSingleAtom({
         tag: "integer",
-        payload: {
-          sign: {
-            signValue: "+",
-            signToken: null,
-            followingWhitespaceToken: null,
-          },
-          numericValue: 0,
-          nonnegativeIntegerToken: {
-            stringToken: "",
-            numericValue: 0,
-          },
+        sign: {
+          signValue: "+",
+          signToken: null,
           followingWhitespaceToken: null,
         },
+        numericValue: 0,
+        nonnegativeIntegerToken: {
+          stringToken: "",
+          numericValue: 0,
+        },
+        followingWhitespaceToken: null,
       });
   }
 };
@@ -142,7 +138,7 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
 
     switch (expression.tag) {
       case "additionOrSubtraction":
-        return reconstructAdditionOrSubtractionInputString(expression.payload);
+        return reconstructAdditionOrSubtractionInputString(expression);
       case "atom":
         return reconstructAtomInputString(expression.payload);
     }
@@ -166,9 +162,9 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
   const reconstructAtomInputString = (atom: Atom): string => {
     switch (atom.tag) {
       case "integer":
-        return reconstructIntegerInputString(atom.payload);
+        return reconstructIntegerInputString(atom);
       case "diceRoll":
-        return reconstructDiceRollInputString(atom.payload);
+        return reconstructDiceRollInputString(atom);
     }
   };
 

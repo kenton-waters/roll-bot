@@ -12,9 +12,11 @@ type Case<TagType, PayloadType = undefined> = {
           ? { readonly bigint: PayloadType }
           : [PayloadType] extends [symbol]
             ? { readonly symbol: PayloadType }
-            : [PayloadType] extends [{ tag: unknown }]
-              ? { readonly payload: PayloadType }
-              : { readonly payload: PayloadType });
+            : [PayloadType] extends [unknown[]]
+              ? { readonly array: PayloadType }
+              : [PayloadType] extends [{ tag: unknown }]
+                ? { readonly payload: PayloadType }
+                : PayloadType);
 
 /*interface Pretagged {
   tag: number;

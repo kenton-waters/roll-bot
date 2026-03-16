@@ -28,7 +28,7 @@ const tokenize = ({
 
   const go = (remainingInput: string, pastTokens: Token[]): TokenizeResult => {
     if (remainingInput.length === 0)
-      return { tag: "success", payload: pastTokens };
+      return { tag: "success", array: pastTokens };
 
     const nonnegativeIntegerMatch = remainingInput.match(nonnegativeInteger);
     if (nonnegativeIntegerMatch) {
@@ -37,10 +37,8 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "nonnegativeInteger",
-          payload: {
-            numericValue: parseInt(stringToken),
-            stringToken: stringToken,
-          },
+          numericValue: parseInt(stringToken),
+          stringToken: stringToken,
         },
       ]);
     }
@@ -52,12 +50,10 @@ const tokenize = ({
         const reconstructedInputString = reconstructInputString(pastTokens);
         const err: TokenizeResult = {
           tag: "implementationError",
-          payload: {
-            message: `String ${stringToken} was tokenized as "die" but is neither "D" nor "d"`,
-            tokenizedInput: reconstructedInputString,
-            failurePosition: reconstructedInputString.length,
-            untokenizableRemnant: remainingInput,
-          },
+          message: `String ${stringToken} was tokenized as "die" but is neither "D" nor "d"`,
+          tokenizedInput: reconstructedInputString,
+          failurePosition: reconstructedInputString.length,
+          untokenizableRemnant: remainingInput,
         };
         logger.error(err);
         return err;
@@ -67,9 +63,7 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "die",
-          payload: {
-            stringToken: stringToken,
-          },
+          stringToken: stringToken,
         },
       ]);
     }
@@ -80,9 +74,7 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "plusSign",
-          payload: {
-            stringToken: "+",
-          },
+          stringToken: "+",
         },
       ]);
     }
@@ -93,9 +85,7 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "minusSign",
-          payload: {
-            stringToken: "-",
-          },
+          stringToken: "-",
         },
       ]);
     }
@@ -107,9 +97,7 @@ const tokenize = ({
         ...pastTokens,
         {
           tag: "whitespace",
-          payload: {
-            stringToken: stringToken,
-          },
+          stringToken: stringToken,
         },
       ]);
     }
@@ -117,11 +105,9 @@ const tokenize = ({
     const reconstructedInputString = reconstructInputString(pastTokens);
     return {
       tag: "untokenizableInput",
-      payload: {
-        tokenizedInput: reconstructedInputString,
-        failurePosition: reconstructedInputString.length,
-        untokenizableRemnant: remainingInput,
-      },
+      tokenizedInput: reconstructedInputString,
+      failurePosition: reconstructedInputString.length,
+      untokenizableRemnant: remainingInput,
     };
   };
   return go(inputString, []);
