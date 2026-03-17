@@ -2,10 +2,14 @@ interface Wrapped<DataType> {
   readonly data: DataType;
 }
 
-type Case<CaseName, DataType = undefined> = {
-  readonly type: CaseName; // All instances will have the type property
-} & ([DataType] extends [undefined | null]
-  ? object // We will not add any other required properties for an undefined or null DataType
+type MaybeWrappedObject<DataType> = [DataType] extends [unknown[]]
+  ? { readonly array: DataType }
+  : [DataType] extends [{ type: unknown }]
+    ? Wrapped<DataType> // If it already has a "type" property, we wrap the data to avoid collision.
+    : DataType; // DataType's properties will be at the same level as the "type" property. No wrapping.
+
+type MaybeWrappedData<DataType> = [DataType] extends [undefined | null]
+  ? object // We don't add any other required properties for an undefined or null DataType
   : [DataType] extends [string]
     ? { readonly string: DataType }
     : [DataType] extends [number]
@@ -17,12 +21,12 @@ type Case<CaseName, DataType = undefined> = {
           : [DataType] extends [symbol]
             ? { readonly symbol: DataType }
             : [DataType] extends [object]
-              ? [DataType] extends [unknown[]]
-                ? { readonly array: DataType }
-                : [DataType] extends [{ type: unknown }] // If it already has a "type" property, the data should be in a "data" property to avoid collision.
-                  ? Wrapped<DataType>
-                  : DataType //
-              : Wrapped<DataType>);
+              ? MaybeWrappedObject<DataType>
+              : Wrapped<DataType>; // Unions with primitives (e.g. string | number) end up in this branch (not primitive and not object).
+
+type Case<CaseName, DataType = undefined> = {
+  readonly type: CaseName; // All instances will have the type property
+} & MaybeWrappedData<DataType>;
 
 /*type X = Case<"x", string | number>;
 const test: X = {
