@@ -21,7 +21,7 @@ void describe("parse", () => {
     assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
-      tokens: tokenizeResult.array,
+      tokens: tokenizeResult,
       deps: { prevLogger: nullLogger },
     });
 
@@ -49,7 +49,7 @@ void describe("parse", () => {
     assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
-      tokens: tokenizeResult.array,
+      tokens: tokenizeResult,
       deps: { prevLogger: nullLogger },
     });
 
@@ -105,7 +105,7 @@ void describe("parse", () => {
     assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
-      tokens: tokenizeResult.array,
+      tokens: tokenizeResult,
       deps: { prevLogger: nullLogger },
     });
 
@@ -157,7 +157,7 @@ void describe("parse", () => {
     assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
-      tokens: tokenizeResult.array,
+      tokens: tokenizeResult,
       deps: { prevLogger: nullLogger },
     });
 
@@ -209,7 +209,7 @@ void describe("parse", () => {
     assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
-      tokens: tokenizeResult.array,
+      tokens: tokenizeResult,
       deps: { prevLogger: nullLogger },
     });
 
@@ -262,7 +262,7 @@ void describe("parse", () => {
     assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
-      tokens: tokenizeResult.array,
+      tokens: tokenizeResult,
       deps: { prevLogger: nullLogger },
     });
 
@@ -334,7 +334,7 @@ void describe("parse", () => {
     assert.strictEqual(tokenizeResult.type, "success");
 
     const parseResult = parse({
-      tokens: tokenizeResult.array,
+      tokens: tokenizeResult,
       deps: { prevLogger: nullLogger },
     });
 

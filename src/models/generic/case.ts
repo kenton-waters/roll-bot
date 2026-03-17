@@ -2,11 +2,9 @@ interface Wrapped<DataType> {
   readonly data: DataType;
 }
 
-type MaybeWrappedObject<DataType> = [DataType] extends [unknown[]]
-  ? { readonly array: DataType }
-  : [DataType] extends [{ type: unknown }]
-    ? Wrapped<DataType> // If it already has a "type" property, we wrap the data to avoid collision.
-    : DataType; // DataType's properties will be at the same level as the "type" property. No wrapping.
+type MaybeWrappedObject<DataType> = [DataType] extends [{ type: unknown }]
+  ? Wrapped<DataType> // If DataType already has a "type" property, we wrap the data to avoid collision.
+  : DataType; // DataType's properties will be at the same level as the "type" property. No wrapping.
 
 type MaybeWrappedData<DataType> = [DataType] extends [undefined | null]
   ? object // We don't add any other required properties for an undefined or null DataType

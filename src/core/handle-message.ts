@@ -69,7 +69,7 @@ const handleMessage = ({
       logger.info("Tokenization successful. Parsing...");
 
       const parseResult = parse({
-        tokens: tokenizationResult.array,
+        tokens: tokenizationResult,
         deps: {
           prevLogger: logger,
         },

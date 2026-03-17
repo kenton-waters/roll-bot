@@ -28,7 +28,7 @@ const tokenize = ({
 
   const go = (remainingInput: string, pastTokens: Token[]): TokenizeResult => {
     if (remainingInput.length === 0)
-      return { type: "success", array: pastTokens };
+      return Object.assign([...pastTokens], { type: "success" as const });
 
     const nonnegativeIntegerMatch = remainingInput.match(nonnegativeInteger);
     if (nonnegativeIntegerMatch) {
