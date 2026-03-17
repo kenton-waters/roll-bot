@@ -1,7 +1,11 @@
+interface Wrapped<DataType> {
+  readonly data: DataType;
+}
+
 type Case<CaseName, DataType = undefined> = {
   readonly type: CaseName; // All instances will have the type property
 } & ([DataType] extends [undefined | null]
-  ? object // We will not add any properties for an undefined or null DataType
+  ? object // We will not add any other required properties for an undefined or null DataType
   : [DataType] extends [string]
     ? { readonly string: DataType }
     : [DataType] extends [number]
@@ -12,18 +16,28 @@ type Case<CaseName, DataType = undefined> = {
           ? { readonly bigint: DataType }
           : [DataType] extends [symbol]
             ? { readonly symbol: DataType }
-            : [DataType] extends [unknown[]]
-              ? { readonly array: DataType }
-              : [DataType] extends [{ type: unknown }]
-                ? { readonly data: DataType }
-                : DataType);
+            : [DataType] extends [object]
+              ? [DataType] extends [unknown[]]
+                ? { readonly array: DataType }
+                : [DataType] extends [{ type: unknown }] // If it already has a "type" property, the data should be in a "data" property to avoid collision.
+                  ? Wrapped<DataType>
+                  : DataType //
+              : Wrapped<DataType>);
 
-/*interface Pretagged {
+/*type X = Case<"x", string | number>;
+const test: X = {
+  type: "x",
+  data: 0,
+};
+
+// Usage:
+
+interface WithType {
   type: number;
   otherProp: string;
 }
 
-interface Nontagged {
+interface WithoutType {
   otherProp1: string;
   otherProp2: string;
 }
@@ -36,10 +50,9 @@ type Example =
   | Case<"boolean", boolean>
   | Case<"bigint", bigint>
   | Case<"symbol", symbol>
-  | Case<"pretagged", Pretagged>
-  | Case<"nontagged", Nontagged>;
+  | Case<"withType", WithType>
+  | Case<"withoutType", WithoutType>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function Consume(param: Example) {
   switch (param.type) {
     case "undefined":
@@ -63,11 +76,10 @@ function Consume(param: Example) {
     case "symbol":
       console.log(param.symbol);
       break;
-    case "pretagged":
-      console.log(param.data);
+    case "withType":
       console.log(param.data.otherProp);
       break;
-    case "nontagged":
+    case "withoutType":
       console.log(param.otherProp1);
       console.log(param.otherProp2);
       break;
