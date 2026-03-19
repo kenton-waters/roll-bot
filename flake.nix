@@ -14,9 +14,6 @@
       devShells.${system}.default = pkgs.mkShellNoCC {
         buildInputs = with pkgs; [
           nodejs_25
-          (docker.override {
-            initSupport = true;
-          })
         ];
 
         shellHook = ''
