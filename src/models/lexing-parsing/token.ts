@@ -1,4 +1,4 @@
-import type Tagged from "../generic/tagged.js";
+import type C from "../generic/discriminated-union-case.js";
 
 interface AbstractToken {
   readonly stringToken: string;
@@ -23,10 +23,10 @@ export interface MinusSignToken extends AbstractToken {
 }
 
 type Token =
-  | Tagged<"nonnegativeInteger", NonnegativeIntegerToken>
-  | Tagged<"die", DieToken>
-  | Tagged<"whitespace", WhitespaceToken>
-  | Tagged<"plusSign", PlusSignToken>
-  | Tagged<"minusSign", MinusSignToken>;
+  | C<"nonnegativeInteger", NonnegativeIntegerToken>
+  | C<"die", DieToken>
+  | C<"whitespace", WhitespaceToken>
+  | C<"plusSign", PlusSignToken>
+  | C<"minusSign", MinusSignToken>;
 
 export type { Token as default };

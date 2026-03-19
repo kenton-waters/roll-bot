@@ -52,13 +52,13 @@ export const startBot = async ({
       deps: { tokenize, parse, evaluate, prevLogger: messageLogger },
     });
 
-    if (result.tag === "doNotReply") {
+    if (result.type === "doNotReply") {
       messageLogger.info("Not replying to message.");
       return;
     }
 
-    messageLogger.info("Replying with:", result.data);
-    void message.reply(result.data);
+    messageLogger.info("Replying with:", result.string);
+    void message.reply(result.string);
   });
 
   startBotLogger.info("Logging in...");

@@ -22,7 +22,7 @@ void describe("handleMessage", () => {
     });
 
     // Assert
-    assert.strictEqual(handleMessageResult.tag, "doNotReply");
+    assert.strictEqual(handleMessageResult.type, "doNotReply");
   });
 
   void test("message not from bot; evaluate", () => {
@@ -39,8 +39,8 @@ void describe("handleMessage", () => {
       deps: { tokenize: tokenize, parse, evaluate, prevLogger: nullLogger },
     });
 
-    assert.strictEqual(handleMessageResult.tag, "reply");
-    const result: number = parseInt(handleMessageResult.data);
+    assert.strictEqual(handleMessageResult.type, "reply");
+    const result: number = parseInt(handleMessageResult.string);
 
     // Assert
     assert.ok(result >= -4);
@@ -62,7 +62,7 @@ void describe("handleMessage", () => {
     });
 
     // Assert
-    assert.strictEqual(handleMessageResult.tag, "doNotReply");
+    assert.strictEqual(handleMessageResult.type, "doNotReply");
   });
 
   void test("tokenizer implementation error; reply with error", () => {
@@ -80,10 +80,10 @@ void describe("handleMessage", () => {
     });
 
     // Assert
-    assert.strictEqual(handleMessageResult.tag, "reply");
+    assert.strictEqual(handleMessageResult.type, "reply");
     assert.strictEqual(
-      handleMessageResult.data,
-      '{\n  "tag": "implementationError",\n  "data": {\n    "message": "",\n    "tokenizedInput": "",\n    "failurePosition": 0,\n    "untokenizableRemnant": ""\n  }\n}',
+      handleMessageResult.string,
+      '{\n  "type": "implementationError",\n  "message": "",\n  "tokenizedInput": "",\n  "failurePosition": 0,\n  "untokenizableRemnant": ""\n}',
     );
   });
 
@@ -102,10 +102,10 @@ void describe("handleMessage", () => {
     });
 
     // Assert
-    assert.strictEqual(handleMessageResult.tag, "reply");
+    assert.strictEqual(handleMessageResult.type, "reply");
     assert.strictEqual(
-      handleMessageResult.data,
-      '{\n  "tag": "untokenizableInput",\n  "data": {\n    "tokenizedInput": "",\n    "failurePosition": 0,\n    "untokenizableRemnant": "blah"\n  }\n}',
+      handleMessageResult.string,
+      '{\n  "type": "untokenizableInput",\n  "tokenizedInput": "",\n  "failurePosition": 0,\n  "untokenizableRemnant": "blah"\n}',
     );
   });
 });

@@ -11,7 +11,7 @@ export const followEachWith = <ElementType>(
 
 export const reconstructInputString = (tokens: Token[]): string => {
   return tokens.reduce(
-    (accumulator, currentToken) => accumulator + currentToken.data.stringToken,
+    (accumulator, currentToken) => accumulator + currentToken.stringToken,
     "",
   );
 };

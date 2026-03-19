@@ -33,13 +33,13 @@ const handleMessage = ({
 
   if (rollBotUserId === undefined) {
     logger.error("rollBotUserId is undefined. Do not reply.");
-    return { tag: "doNotReply" };
+    return { type: "doNotReply" };
   }
 
   logger.info("Checking whether message was sent by roll-bot...");
   if (message.authorUserId === rollBotUserId) {
     logger.info("Message is from roll-bot. Do not reply.");
-    return { tag: "doNotReply" };
+    return { type: "doNotReply" };
   }
 
   logger.info(
@@ -52,43 +52,43 @@ const handleMessage = ({
       prevLogger: logger,
     },
   });
-  switch (tokenizationResult.tag) {
+  switch (tokenizationResult.type) {
     case "implementationError":
       logger.error(tokenizationResult);
       return {
-        tag: "reply",
-        data: stringify(tokenizationResult),
+        type: "reply",
+        string: stringify(tokenizationResult),
       };
     case "untokenizableInput":
       logger.warn(tokenizationResult);
       return {
-        tag: "reply",
-        data: stringify(tokenizationResult),
+        type: "reply",
+        string: stringify(tokenizationResult),
       };
     case "success": {
       logger.info("Tokenization successful. Parsing...");
 
       const parseResult = parse({
-        tokens: tokenizationResult.data,
+        tokens: tokenizationResult,
         deps: {
           prevLogger: logger,
         },
       });
 
-      switch (parseResult.tag) {
+      switch (parseResult.type) {
         case "failure":
           logger.warn(parseResult);
           return {
-            tag: "reply",
-            data: stringify(parseResult),
+            type: "reply",
+            string: stringify(parseResult),
           };
         case "success": {
           logger.info("Parsing successful. Evaluating total...");
-          const total = evaluate(parseResult.data.parsedObject);
+          const total = evaluate(parseResult.parsedObject);
           logger.info("Evaluation successful. Replying with total", total);
           return {
-            tag: "reply",
-            data: total.toString(),
+            type: "reply",
+            string: total.toString(),
           };
         }
       }
