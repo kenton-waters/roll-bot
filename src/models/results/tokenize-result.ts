@@ -1,4 +1,4 @@
-import type Tagged from "../generic/case.js";
+import type C from "../generic/discriminated-union-case.js";
 import type Token from "../lexing-parsing/token.js";
 
 interface TokenizationFailure {
@@ -12,8 +12,8 @@ interface ImplementationError extends TokenizationFailure {
 }
 
 type TokenizeResult =
-  | Tagged<"untokenizableInput", TokenizationFailure>
-  | Tagged<"implementationError", ImplementationError>
-  | Tagged<"success", Token[]>;
+  | C<"untokenizableInput", TokenizationFailure>
+  | C<"implementationError", ImplementationError>
+  | C<"success", Token[]>;
 
 export type { TokenizeResult as default };

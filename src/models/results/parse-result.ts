@@ -1,4 +1,4 @@
-import type Tagged from "../generic/case.js";
+import type C from "../generic/discriminated-union-case.js";
 import type Token from "../lexing-parsing/token.js";
 
 interface RemainingTokens {
@@ -14,7 +14,7 @@ interface ParseFailure extends RemainingTokens {
 }
 
 type ParseResult<ParseTo> =
-  | Tagged<"success", ParseSuccess<ParseTo>>
-  | Tagged<"failure", ParseFailure>;
+  | C<"success", ParseSuccess<ParseTo>>
+  | C<"failure", ParseFailure>;
 
 export type { ParseResult as default };

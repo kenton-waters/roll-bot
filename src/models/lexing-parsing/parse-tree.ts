@@ -1,4 +1,4 @@
-import type C from "../generic/case.js";
+import type C from "../generic/discriminated-union-case.js";
 import type {
   DieToken,
   MinusSignToken,
