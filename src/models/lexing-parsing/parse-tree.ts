@@ -1,4 +1,4 @@
-import type Tagged from "../generic/case.js";
+import type C from "../generic/case.js";
 import type {
   DieToken,
   MinusSignToken,
@@ -43,7 +43,7 @@ export interface DiceRoll extends Signed, WhitespaceFollowing {
   readonly positiveNumFacesToken: NonnegativeIntegerToken;
 }
 
-export type Atom = Tagged<"integer", Integer> | Tagged<"diceRoll", DiceRoll>;
+export type Atom = C<"integer", Integer> | C<"diceRoll", DiceRoll>;
 
 export interface AdditionOrSubtraction extends WhitespaceFollowing {
   readonly leftHandAtom: Atom;
@@ -52,8 +52,8 @@ export interface AdditionOrSubtraction extends WhitespaceFollowing {
 }
 
 export type Expression =
-  | Tagged<"additionOrSubtraction", AdditionOrSubtraction>
-  | Tagged<"atom", Atom>;
+  | C<"additionOrSubtraction", AdditionOrSubtraction>
+  | C<"atom", Atom>;
 
 export default interface ParseTree {
   readonly initialWhitespaceToken: WhitespaceToken | null;
