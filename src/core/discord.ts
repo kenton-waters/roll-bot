@@ -8,6 +8,7 @@ import { evaluate } from "../util/tree-helpers.js";
 interface StartBotParams {
   readonly discordClient: Client;
   readonly discordToken: string;
+  readonly rollsChannelName: string | undefined;
   readonly deps: {
     readonly prevLogger: Logger;
   };
@@ -15,6 +16,7 @@ interface StartBotParams {
 export const startBot = async ({
   discordClient,
   discordToken,
+  rollsChannelName,
   deps: { prevLogger },
 }: StartBotParams): Promise<void> => {
   const startBotLogger = prevLogger.logWithNew(
@@ -45,7 +47,7 @@ export const startBot = async ({
     );
 
     const result = handleMessage({
-      rollsChannelName: undefined,
+      rollsChannelName: rollsChannelName,
       rollBotUserId: discordClient.user?.id,
       message: {
         authorUserId: message.author.id,
