@@ -6,6 +6,7 @@ import type parse from "./lexing-parsing/parse.js";
 import tokenize from "./lexing-parsing/tokenize.js";
 
 interface HandleMessageParams {
+  readonly rollsChannelName: string | undefined;
   readonly rollBotUserId: string | undefined;
   readonly message: {
     readonly authorUserId: string;
@@ -20,6 +21,7 @@ interface HandleMessageParams {
   };
 }
 const handleMessage = ({
+  rollsChannelName,
   rollBotUserId,
   message,
   deps: { tokenize, parse, prevLogger },
@@ -30,6 +32,7 @@ const handleMessage = ({
     message,
     "with roll-bot user id:",
     rollBotUserId,
+    rollsChannelName,
   );
 
   if (rollBotUserId === undefined) {
@@ -43,8 +46,14 @@ const handleMessage = ({
     return { type: "doNotReply" };
   }
 
+  logger.info("Checking channel name...");
+  if (message.channelName !== (rollsChannelName ?? "rolls")) {
+    logger.info("Message is not in the rolls channel. Do not reply.");
+    return { type: "doNotReply" };
+  }
+
   logger.info(
-    "Message is not from roll-bot. Tokenize content:",
+    "User ID and channel name correct. Tokenize content:",
     message.content,
   );
   const tokenizationResult = tokenize({
