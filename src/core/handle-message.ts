@@ -9,6 +9,7 @@ interface HandleMessageParams {
   readonly rollBotUserId: string | undefined;
   readonly message: {
     readonly authorUserId: string;
+    readonly channelName: string | undefined;
     readonly content: string;
   };
   readonly deps: {

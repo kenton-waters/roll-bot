@@ -30,12 +30,13 @@ export const startBot = async ({
   });
 
   discordClient.on(Events.MessageCreate, (message) => {
+    const channelName =
+      "name" in message.channel ? message.channel.name : undefined;
     const messageLogger = startBotLogger.logWithNew(
       `message ${message.id}`,
       "Message created:",
       {
-        channelName:
-          "name" in message.channel ? message.channel.name : undefined,
+        channelName: channelName,
         channelId: message.channelId,
         authorTag: message.author.tag,
         authorId: message.author.id,
@@ -47,6 +48,7 @@ export const startBot = async ({
       rollBotUserId: discordClient.user?.id,
       message: {
         authorUserId: message.author.id,
+        channelName: channelName,
         content: message.content,
       },
       deps: { tokenize, parse, evaluate, prevLogger: messageLogger },

@@ -11,6 +11,7 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "botId",
+      channelName: undefined,
       content: "blah",
     };
 
@@ -29,6 +30,7 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
+      channelName: undefined,
       content: " 1 d 20 - 5 ",
     };
 
@@ -51,6 +53,7 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
+      channelName: undefined,
       content: "blah",
     };
 
@@ -69,6 +72,7 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
+      channelName: undefined,
       content: "blah",
     };
 
@@ -91,6 +95,7 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
+      channelName: undefined,
       content: "blah",
     };
 
