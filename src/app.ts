@@ -1,4 +1,7 @@
-import { DISCORD_TOKEN } from "./constants/environment-variables.js";
+import {
+  DISCORD_TOKEN,
+  ROLLS_CHANNEL_NAME,
+} from "./constants/environment-variables.js";
 import type Logger from "./models/logger.js";
 import { startBot } from "./core/discord.js";
 import createDiscordClient from "./factories/discord-client-factory.js";
@@ -22,6 +25,7 @@ logger.info("Discord token retrieved. Starting bot...");
 await startBot({
   discordClient: createDiscordClient(),
   discordToken: DISCORD_TOKEN,
+  rollsChannelName: ROLLS_CHANNEL_NAME,
   deps: {
     prevLogger: logger,
   },

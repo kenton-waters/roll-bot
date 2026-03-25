@@ -11,11 +11,13 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "botId",
+      channelName: undefined,
       content: "blah",
     };
 
     // Act
     const handleMessageResult = handleMessage({
+      rollsChannelName: undefined,
       rollBotUserId: "botId",
       message: message,
       deps: { tokenize: nullTokenize, parse, evaluate, prevLogger: nullLogger },
@@ -29,11 +31,13 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
+      channelName: "rolls",
       content: " 1 d 20 - 5 ",
     };
 
     // Act
     const handleMessageResult = handleMessage({
+      rollsChannelName: undefined,
       rollBotUserId: "botId",
       message: message,
       deps: { tokenize: tokenize, parse, evaluate, prevLogger: nullLogger },
@@ -51,12 +55,34 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
+      channelName: undefined,
       content: "blah",
     };
 
     // Act
     const handleMessageResult = handleMessage({
+      rollsChannelName: undefined,
       rollBotUserId: undefined,
+      message: message,
+      deps: { tokenize: nullTokenize, parse, evaluate, prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(handleMessageResult.type, "doNotReply");
+  });
+
+  void test("channelName does not match; do not reply", () => {
+    // Arrange
+    const message = {
+      authorUserId: "authorId",
+      channelName: "badVal",
+      content: "blah",
+    };
+
+    // Act
+    const handleMessageResult = handleMessage({
+      rollsChannelName: "rollsChannelName",
+      rollBotUserId: "botId",
       message: message,
       deps: { tokenize: nullTokenize, parse, evaluate, prevLogger: nullLogger },
     });
@@ -69,11 +95,13 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
+      channelName: "rolls",
       content: "blah",
     };
 
     // Act
     const handleMessageResult = handleMessage({
+      rollsChannelName: undefined,
       rollBotUserId: "botId",
       message: message,
       deps: { tokenize: nullTokenize, parse, evaluate, prevLogger: nullLogger },
@@ -91,11 +119,13 @@ void describe("handleMessage", () => {
     // Arrange
     const message = {
       authorUserId: "authorId",
+      channelName: "rolls",
       content: "blah",
     };
 
     // Act
     const handleMessageResult = handleMessage({
+      rollsChannelName: undefined,
       rollBotUserId: "botId",
       message: message,
       deps: { tokenize: tokenize, parse, evaluate, prevLogger: nullLogger },
