@@ -26,17 +26,15 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.type, "success");
-    assert.strictEqual(parseResult.parsedObject.initialWhitespaceToken, null);
-    assert.strictEqual(parseResult.parsedObject.expression, null);
-    assert.strictEqual(parseResult.remainingTokens.length, 0);
+    assert.strictEqual(parseResult.type, "failure");
     assert.strictEqual(
-      reconstructInputString(parseResult.parsedObject),
-      inputString,
+      parseResult.reason,
+      "Expected nonnegative integer token not found when parsing integer atom.",
     );
+    assert.strictEqual(parseResult.remainingTokens.length, 0);
   });
 
-  void test("only initial whitespace; success", () => {
+  void test("only initial whitespace; failure", () => {
     // Arrange
     const inputString = "  ";
 
@@ -54,17 +52,64 @@ void describe("parse", () => {
     });
 
     // Assert
-    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(parseResult.type, "failure");
     assert.strictEqual(
-      parseResult.parsedObject.initialWhitespaceToken?.stringToken,
-      "  ",
+      parseResult.reason,
+      "Expected nonnegative integer token not found when parsing integer atom.",
     );
-    assert.strictEqual(parseResult.parsedObject.expression, null);
     assert.strictEqual(parseResult.remainingTokens.length, 0);
+  });
+
+  void test("only plus sign; failure", () => {
+    // Arrange
+    const inputString = "+";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.type, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.type, "failure");
     assert.strictEqual(
-      reconstructInputString(parseResult.parsedObject),
-      inputString,
+      parseResult.reason,
+      "Expected nonnegative integer token not found when parsing integer atom.",
     );
+    assert.strictEqual(parseResult.remainingTokens.length, 0);
+  });
+
+  void test("only minus sign; failure", () => {
+    // Arrange
+    const inputString = " - ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.type, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.type, "failure");
+    assert.strictEqual(
+      parseResult.reason,
+      "Expected nonnegative integer token not found when parsing integer atom.",
+    );
+    assert.strictEqual(parseResult.remainingTokens.length, 0);
   });
 
   void test("two whitespace tokens; failure; tokens not exhausted", () => {
@@ -88,7 +133,10 @@ void describe("parse", () => {
 
     // Assert
     assert.strictEqual(parseResult.type, "failure");
-    assert.strictEqual(parseResult.reason, "Parsing did not exhaust tokens.");
+    assert.strictEqual(
+      parseResult.reason,
+      "Expected nonnegative integer token not found when parsing integer atom.",
+    );
     assert.strictEqual(parseResult.remainingTokens.length, 1);
   });
 

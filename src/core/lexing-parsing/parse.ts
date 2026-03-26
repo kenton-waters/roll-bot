@@ -56,14 +56,7 @@ const parseTree = (tokens: Token[]): ParseResult<ParseTree> => {
   const parseExpressionResult = parseExpression(postInitialWhitespaceTokens);
   switch (parseExpressionResult.type) {
     case "failure":
-      return {
-        type: "success",
-        parsedObject: {
-          initialWhitespaceToken,
-          expression: null,
-        },
-        remainingTokens: parseExpressionResult.remainingTokens,
-      };
+      return parseExpressionResult;
     case "success":
       return {
         type: "success",
