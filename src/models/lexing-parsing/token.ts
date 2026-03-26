@@ -22,11 +22,21 @@ export interface MinusSignToken extends AbstractToken {
   readonly stringToken: "-";
 }
 
+export interface LeftParenToken extends AbstractToken {
+  readonly stringToken: "(";
+}
+
+export interface RightParenToken extends AbstractToken {
+  readonly stringToken: ")";
+}
+
 type Token =
   | C<"nonnegativeInteger", NonnegativeIntegerToken>
   | C<"die", DieToken>
   | C<"whitespace", WhitespaceToken>
   | C<"plusSign", PlusSignToken>
-  | C<"minusSign", MinusSignToken>;
+  | C<"minusSign", MinusSignToken>
+  | C<"leftParen", LeftParenToken>
+  | C<"rightParen", RightParenToken>;
 
 export type { Token as default };
