@@ -4,6 +4,7 @@ import {
   minusSign,
   plusSign,
   whitespace,
+  leftParen,
 } from "../../constants/regular-expressions.js";
 import type Token from "../../models/lexing-parsing/token.js";
 import type Logger from "../../models/logger.js";
@@ -98,6 +99,18 @@ const tokenize = ({
         {
           type: "whitespace",
           stringToken: stringToken,
+        },
+      ]);
+    }
+
+    const leftParenMatch = remainingInput.match(leftParen);
+    if (leftParenMatch) {
+      const stringToken = leftParenMatch[0];
+      return go(remainingInput.slice(stringToken.length), [
+        ...pastTokens,
+        {
+          type: "leftParen",
+          stringToken: "(",
         },
       ]);
     }

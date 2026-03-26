@@ -7,3 +7,7 @@ export const whitespace = /^\s+/;
 export const plusSign = /^\+/;
 
 export const minusSign = /^-/;
+
+export const leftParen = /^\(/;
+
+export const rightParen = /^\)/;
