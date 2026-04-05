@@ -4,6 +4,7 @@ import type {
   DiceRoll,
   Expression,
   Integer,
+  Parenthetical,
   Sign,
 } from "../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../models/lexing-parsing/parse-tree.js";
@@ -42,6 +43,9 @@ export const evaluate = (parseTree: ParseTree): number => {
         return evaluateAtom(expression.data);
       case "additionOrSubtraction":
         return evaluateAdditionOrSubtraction(expression);
+      case "parenthetical": {
+        return evaluateExpression(expression.internalExpression);
+      }
     }
   };
 
@@ -105,6 +109,8 @@ export const evaluate = (parseTree: ParseTree): number => {
       return evaluateAdditionOrSubtraction(parseTree.expression);
     case "atom":
       return evaluateSingleAtom(parseTree.expression.data);
+    case "parenthetical":
+      return evaluateExpression(parseTree.expression.internalExpression);
     case undefined:
       // 1d20 + 0
       return evaluateSingleAtom({
@@ -141,7 +147,26 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
         return reconstructAdditionOrSubtractionInputString(expression);
       case "atom":
         return reconstructAtomInputString(expression.data);
+      case "parenthetical": {
+        return reconstructParentheticalInputString(expression);
+      }
     }
+  };
+
+  const reconstructParentheticalInputString = (
+    parenthetical: Parenthetical,
+  ): string => {
+    return (
+      parenthetical.leftParen.leftParenToken.stringToken +
+      reconstructWhitespaceInputString(
+        parenthetical.leftParen.followingWhitespaceToken,
+      ) +
+      reconstructExpressionInputString(parenthetical.internalExpression) +
+      parenthetical.rightParen.rightParenToken.stringToken +
+      reconstructWhitespaceInputString(
+        parenthetical.rightParen.followingWhitespaceToken,
+      )
+    );
   };
 
   const reconstructAdditionOrSubtractionInputString = (

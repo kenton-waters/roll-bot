@@ -8,7 +8,7 @@ import type Token from "../../../src/models/lexing-parsing/token.js";
 import { reconstructInputString } from "../../../src/util/tree-helpers.js";
 
 void describe("parse", () => {
-  void test("empty input; success", () => {
+  void test("empty input; failure", () => {
     // Arrange
     const inputString = "";
 
@@ -112,7 +112,7 @@ void describe("parse", () => {
     assert.strictEqual(parseResult.remainingTokens.length, 0);
   });
 
-  void test("two whitespace tokens; failure; tokens not exhausted", () => {
+  void test("two whitespace tokens; failure", () => {
     // Arrange
     const inputTokens: Token[] = [
       {
@@ -184,6 +184,63 @@ void describe("parse", () => {
     assert.strictEqual(
       parseResult.parsedObject.expression.data.followingWhitespaceToken,
       null,
+    );
+    assert.strictEqual(parseResult.remainingTokens.length, 0);
+    assert.strictEqual(
+      reconstructInputString(parseResult.parsedObject),
+      inputString,
+    );
+  });
+
+  void test("parenthetical integer; success", () => {
+    // Arrange
+    const inputString = " ( 3 ) ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.type, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(
+      parseResult.parsedObject.expression?.type,
+      "parenthetical",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.leftParen.followingWhitespaceToken
+        ?.stringToken,
+      " ",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.internalExpression.type,
+      "atom",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.internalExpression.data.type,
+      "integer",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.internalExpression.data.numericValue,
+      3,
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.internalExpression.data
+        .followingWhitespaceToken?.stringToken,
+      " ",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.rightParen.followingWhitespaceToken
+        ?.stringToken,
+      " ",
     );
     assert.strictEqual(parseResult.remainingTokens.length, 0);
     assert.strictEqual(

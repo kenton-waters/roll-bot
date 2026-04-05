@@ -69,7 +69,8 @@ export interface Parenthetical {
 
 export type Expression =
   | C<"additionOrSubtraction", AdditionOrSubtraction>
-  | C<"atom", Atom>;
+  | C<"atom", Atom>
+  | C<"parenthetical", Parenthetical>;
 
 export default interface ParseTree {
   readonly initialWhitespaceToken: WhitespaceToken | null;

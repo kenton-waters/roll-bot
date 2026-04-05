@@ -5,6 +5,7 @@ import type {
   Expression,
   Integer,
   NumDice,
+  Parenthetical,
   Sign,
 } from "../../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../../models/lexing-parsing/parse-tree.js";
@@ -86,6 +87,17 @@ const parseOptionalWhitespace = (
 };
 
 const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
+  const parseParentheticalResult = parseParenthetical(tokens);
+  if (parseParentheticalResult.type === "success")
+    return {
+      type: "success",
+      parsedObject: {
+        type: "parenthetical",
+        ...parseParentheticalResult.parsedObject,
+      },
+      remainingTokens: parseParentheticalResult.remainingTokens,
+    };
+
   const parseAdditionOrSubtractionResult = parseAdditionOrSubtraction(tokens);
   if (parseAdditionOrSubtractionResult.type === "success")
     return {
@@ -111,6 +123,71 @@ const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
         remainingTokens: parseAtomResult.remainingTokens,
       };
   }
+};
+
+const parseParenthetical = (tokens: Token[]): ParseResult<Parenthetical> => {
+  if (tokens.length === 0) {
+    return {
+      type: "failure",
+      reason: "Tokens exhausted before attempting to parse '('.",
+      remainingTokens: tokens,
+    };
+  }
+
+  if (tokens[0]?.stringToken !== "(") {
+    return {
+      type: "failure",
+      reason: "Expected '(' not found.",
+      remainingTokens: tokens,
+    };
+  }
+
+  const {
+    parsedObject: postLeftParenWhitespace,
+    remainingTokens: postLeftParenTokens,
+  } = parseOptionalWhitespace(tokens.slice(1));
+
+  const parseInnerExpressionResult = parseExpression(postLeftParenTokens);
+  if (parseInnerExpressionResult.type !== "success")
+    return parseInnerExpressionResult;
+
+  if (parseInnerExpressionResult.remainingTokens.length === 0)
+    return {
+      type: "failure",
+      reason: "Tokens exhausted before attempting to parse ')'.",
+      remainingTokens: parseInnerExpressionResult.remainingTokens,
+    };
+
+  if (parseInnerExpressionResult.remainingTokens[0]?.stringToken !== ")") {
+    return {
+      type: "failure",
+      reason: "Expected ')' not found.",
+      remainingTokens: parseInnerExpressionResult.remainingTokens,
+    };
+  }
+
+  const {
+    parsedObject: postRightParenWhitespace,
+    remainingTokens: postRightParenTokens,
+  } = parseOptionalWhitespace(
+    parseInnerExpressionResult.remainingTokens.slice(1),
+  );
+
+  return {
+    type: "success",
+    parsedObject: {
+      leftParen: {
+        followingWhitespaceToken: postLeftParenWhitespace,
+        leftParenToken: { stringToken: "(" },
+      },
+      internalExpression: parseInnerExpressionResult.parsedObject,
+      rightParen: {
+        followingWhitespaceToken: postRightParenWhitespace,
+        rightParenToken: { stringToken: ")" },
+      },
+    },
+    remainingTokens: postRightParenTokens,
+  };
 };
 
 const parseAdditionOrSubtraction = (
