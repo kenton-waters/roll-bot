@@ -278,6 +278,58 @@ void describe("parse", () => {
     assert.strictEqual(evaluate(parseResult.parsedObject), 5);
   });
 
+  void test("(1-2)-3; -4", () => {
+    // Arrange
+    const inputString = "(1-2)-3";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.type, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(
+      reconstructInputString(parseResult.parsedObject),
+      inputString,
+    );
+    assert.strictEqual(evaluate(parseResult.parsedObject), -4);
+  });
+
+  void test("1-(2-3); -4", () => {
+    // Arrange
+    const inputString = " 1 - ( 2 - 3  )  ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.type, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(
+      reconstructInputString(parseResult.parsedObject),
+      inputString,
+    );
+    assert.strictEqual(evaluate(parseResult.parsedObject), 2);
+  });
+
   void test("negative integer; success", () => {
     // Arrange
     const inputString = "-3";
