@@ -4,6 +4,7 @@ import type {
   DiceRoll,
   Expression,
   Integer,
+  LeftHandTerm,
   NumDice,
   Parenthetical,
   Sign,
@@ -87,17 +88,6 @@ const parseOptionalWhitespace = (
 };
 
 const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
-  const parseParentheticalResult = parseParenthetical(tokens);
-  if (parseParentheticalResult.type === "success")
-    return {
-      type: "success",
-      parsedObject: {
-        type: "parenthetical",
-        ...parseParentheticalResult.parsedObject,
-      },
-      remainingTokens: parseParentheticalResult.remainingTokens,
-    };
-
   const parseAdditionOrSubtractionResult = parseAdditionOrSubtraction(tokens);
   if (parseAdditionOrSubtractionResult.type === "success")
     return {
@@ -107,6 +97,17 @@ const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
         ...parseAdditionOrSubtractionResult.parsedObject,
       },
       remainingTokens: parseAdditionOrSubtractionResult.remainingTokens,
+    };
+
+  const parseParentheticalResult = parseParenthetical(tokens);
+  if (parseParentheticalResult.type === "success")
+    return {
+      type: "success",
+      parsedObject: {
+        type: "parenthetical",
+        ...parseParentheticalResult.parsedObject,
+      },
+      remainingTokens: parseParentheticalResult.remainingTokens,
     };
 
   const parseAtomResult = parseAtom(tokens);
@@ -190,18 +191,48 @@ const parseParenthetical = (tokens: Token[]): ParseResult<Parenthetical> => {
   };
 };
 
+const parseLeftHandTerm = (tokens: Token[]): ParseResult<LeftHandTerm> => {
+  const parseParentheticalResult = parseParenthetical(tokens);
+  if (parseParentheticalResult.type === "success")
+    return {
+      type: "success",
+      parsedObject: {
+        type: "parenthetical",
+        ...parseParentheticalResult.parsedObject,
+      },
+      remainingTokens: parseParentheticalResult.remainingTokens,
+    };
+
+  const parseAtomResult = parseAtom(tokens);
+  if (parseAtomResult.type === "success")
+    return {
+      type: "success",
+      parsedObject: {
+        type: "atom",
+        data: parseAtomResult.parsedObject,
+      },
+      remainingTokens: parseAtomResult.remainingTokens,
+    };
+
+  return {
+    type: "failure",
+    reason: parseAtomResult.reason,
+    remainingTokens: parseAtomResult.remainingTokens,
+  };
+};
+
 const parseAdditionOrSubtraction = (
   tokens: Token[],
 ): ParseResult<AdditionOrSubtraction> => {
-  const parseLeftHandAtomResult = parseAtom(tokens);
+  const parseLeftHandTermResult = parseLeftHandTerm(tokens);
 
-  if (parseLeftHandAtomResult.type !== "success")
-    return parseLeftHandAtomResult;
+  if (parseLeftHandTermResult.type !== "success")
+    return parseLeftHandTermResult;
 
   const {
-    parsedObject: leftHandAtom,
+    parsedObject: leftHandTerm,
     remainingTokens: postLeftHandAtomTokens,
-  } = parseLeftHandAtomResult;
+  } = parseLeftHandTermResult;
 
   const nextToken = postLeftHandAtomTokens[0];
   if (nextToken?.type !== "plusSign" && nextToken?.type !== "minusSign")
@@ -226,7 +257,7 @@ const parseAdditionOrSubtraction = (
   return {
     type: "success",
     parsedObject: {
-      leftHandAtom,
+      leftHandTerm: leftHandTerm,
       operatorToken,
       followingWhitespaceToken: postOperatorWhitespaceToken,
       rightHandExpression: parseRightHandExpressionResult.parsedObject,

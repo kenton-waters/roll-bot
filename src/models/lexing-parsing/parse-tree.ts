@@ -47,8 +47,10 @@ export interface DiceRoll extends Signed, WhitespaceFollowing {
 
 export type Atom = C<"integer", Integer> | C<"diceRoll", DiceRoll>;
 
+export type LeftHandTerm = C<"atom", Atom> | C<"parenthetical", Parenthetical>;
+
 export interface AdditionOrSubtraction extends WhitespaceFollowing {
-  readonly leftHandAtom: Atom;
+  readonly leftHandTerm: LeftHandTerm;
   readonly operatorToken: PlusSignToken | MinusSignToken;
   readonly rightHandExpression: Expression;
 }
