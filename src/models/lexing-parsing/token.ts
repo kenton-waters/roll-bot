@@ -22,6 +22,14 @@ export interface SubtractionToken extends AbstractToken {
   readonly stringToken: "-";
 }
 
+export interface MultiplicationToken extends AbstractToken {
+  readonly stringToken: "*";
+}
+
+export interface DivisionToken extends AbstractToken {
+  readonly stringToken: "/";
+}
+
 export interface LeftParenToken extends AbstractToken {
   readonly stringToken: "(";
 }
@@ -36,6 +44,8 @@ type Token =
   | C<"whitespace", WhitespaceToken>
   | C<"addition", AdditionToken>
   | C<"subtraction", SubtractionToken>
+  | C<"multiplication", MultiplicationToken>
+  | C<"division", DivisionToken>
   | C<"leftParen", LeftParenToken>
   | C<"rightParen", RightParenToken>;
 

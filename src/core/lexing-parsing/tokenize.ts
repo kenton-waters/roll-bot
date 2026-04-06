@@ -6,6 +6,8 @@ import {
   whitespace,
   leftParen,
   rightParen,
+  multiplication,
+  division,
 } from "../../constants/regular-expressions.js";
 import type Token from "../../models/lexing-parsing/token.js";
 import type Logger from "../../models/logger.js";
@@ -88,6 +90,28 @@ const tokenize = ({
         {
           type: "subtraction",
           stringToken: "-",
+        },
+      ]);
+    }
+
+    const multiplicationMatch = remainingInput.match(multiplication);
+    if (multiplicationMatch) {
+      return go(remainingInput.slice(multiplicationMatch[0].length), [
+        ...pastTokens,
+        {
+          type: "multiplication",
+          stringToken: "*",
+        },
+      ]);
+    }
+
+    const divisionMatch = remainingInput.match(division);
+    if (divisionMatch) {
+      return go(remainingInput.slice(divisionMatch[0].length), [
+        ...pastTokens,
+        {
+          type: "division",
+          stringToken: "/",
         },
       ]);
     }

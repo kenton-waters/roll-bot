@@ -104,6 +104,25 @@ void describe("tokenize", () => {
     assert.strictEqual(tokenizeResult[1].stringToken, "D");
   });
 
+  void test("multiplication and division; success; two tokens", () => {
+    // Arrange
+    const inputString = "*/";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.type, "success");
+    assert.strictEqual(tokenizeResult.length, 2);
+    assert.strictEqual(tokenizeResult[0]?.type, "multiplication");
+    assert.strictEqual(tokenizeResult[0].stringToken, "*");
+    assert.strictEqual(tokenizeResult[1]?.type, "division");
+    assert.strictEqual(tokenizeResult[1].stringToken, "/");
+  });
+
   void test("whitespace input; success", () => {
     // Arrange
     const inputString = "   \t  \n  ";
