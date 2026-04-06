@@ -2,9 +2,9 @@ import type C from "../generic/discriminated-union-case.js";
 import type {
   DieToken,
   LeftParenToken,
-  MinusSignToken,
+  SubtractionToken,
   NonnegativeIntegerToken,
-  PlusSignToken,
+  AdditionToken,
   RightParenToken,
   WhitespaceToken,
 } from "./token.js";
@@ -16,7 +16,7 @@ interface WhitespaceFollowing {
 export interface Sign extends WhitespaceFollowing {
   readonly signValue: "-" | "+";
 
-  readonly signToken: MinusSignToken | PlusSignToken | null;
+  readonly signToken: SubtractionToken | AdditionToken | null;
 }
 
 interface Signed {
@@ -51,7 +51,7 @@ export type LeftHandTerm = C<"atom", Atom> | C<"parenthetical", Parenthetical>;
 
 export interface AdditionOrSubtraction extends WhitespaceFollowing {
   readonly leftHandTerm: LeftHandTerm;
-  readonly operatorToken: PlusSignToken | MinusSignToken;
+  readonly operatorToken: AdditionToken | SubtractionToken;
   readonly rightHandExpression: Expression;
 }
 

@@ -1,8 +1,8 @@
 import {
   die,
   integer as nonnegativeInteger,
-  minusSign,
-  plusSign,
+  subtraction,
+  addition,
   whitespace,
   leftParen,
   rightParen,
@@ -70,23 +70,23 @@ const tokenize = ({
       ]);
     }
 
-    const plusSignMatch = remainingInput.match(plusSign);
-    if (plusSignMatch) {
-      return go(remainingInput.slice(plusSignMatch[0].length), [
+    const additionMatch = remainingInput.match(addition);
+    if (additionMatch) {
+      return go(remainingInput.slice(additionMatch[0].length), [
         ...pastTokens,
         {
-          type: "plusSign",
+          type: "addition",
           stringToken: "+",
         },
       ]);
     }
 
-    const minusSignMatch = remainingInput.match(minusSign);
-    if (minusSignMatch) {
-      return go(remainingInput.slice(minusSignMatch[0].length), [
+    const subtractionMatch = remainingInput.match(subtraction);
+    if (subtractionMatch) {
+      return go(remainingInput.slice(subtractionMatch[0].length), [
         ...pastTokens,
         {
-          type: "minusSign",
+          type: "subtraction",
           stringToken: "-",
         },
       ]);

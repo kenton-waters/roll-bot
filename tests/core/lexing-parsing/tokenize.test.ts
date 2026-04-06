@@ -134,7 +134,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.type, "success");
     assert.strictEqual(tokenizeResult.length, 11);
-    assert.strictEqual(tokenizeResult[7]?.type, "plusSign");
+    assert.strictEqual(tokenizeResult[7]?.type, "addition");
     assert.strictEqual(tokenizeResult[7].stringToken, "+");
   });
 
@@ -151,7 +151,7 @@ void describe("tokenize", () => {
     // Assert
     assert.strictEqual(tokenizeResult.type, "success");
     assert.strictEqual(tokenizeResult.length, 11);
-    assert.strictEqual(tokenizeResult[7]?.type, "minusSign");
+    assert.strictEqual(tokenizeResult[7]?.type, "subtraction");
     assert.strictEqual(tokenizeResult[7].stringToken, "-");
   });
 

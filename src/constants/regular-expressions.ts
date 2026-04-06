@@ -4,10 +4,14 @@ export const die = /^(?:D|d)/;
 
 export const whitespace = /^\s+/;
 
-export const plusSign = /^\+/;
+export const addition = /^\+/;
 
-export const minusSign = /^-/;
+export const subtraction = /^-/;
 
 export const leftParen = /^\(/;
 
 export const rightParen = /^\)/;
+
+export const multiplication = /^\*/;
+
+export const division = /^\//;

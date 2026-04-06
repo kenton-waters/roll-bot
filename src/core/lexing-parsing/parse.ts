@@ -235,7 +235,7 @@ const parseAdditionOrSubtraction = (
   } = parseLeftHandTermResult;
 
   const nextToken = postLeftHandAtomTokens[0];
-  if (nextToken?.type !== "plusSign" && nextToken?.type !== "minusSign")
+  if (nextToken?.type !== "addition" && nextToken?.type !== "subtraction")
     return {
       type: "failure",
       reason:
@@ -415,7 +415,7 @@ const parseInteger = (tokens: Token[]): ParseResult<Integer> => {
 
 const parseSign = (tokens: Token[]): ParseSuccess<Sign> => {
   const firstToken = tokens[0];
-  if (firstToken?.type !== "minusSign" && firstToken?.type !== "plusSign")
+  if (firstToken?.type !== "subtraction" && firstToken?.type !== "addition")
     return {
       parsedObject: {
         signValue: "+",

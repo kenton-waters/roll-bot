@@ -14,11 +14,11 @@ export interface DieToken extends AbstractToken {
 
 export type WhitespaceToken = AbstractToken;
 
-export interface PlusSignToken extends AbstractToken {
+export interface AdditionToken extends AbstractToken {
   readonly stringToken: "+";
 }
 
-export interface MinusSignToken extends AbstractToken {
+export interface SubtractionToken extends AbstractToken {
   readonly stringToken: "-";
 }
 
@@ -34,8 +34,8 @@ type Token =
   | C<"nonnegativeInteger", NonnegativeIntegerToken>
   | C<"die", DieToken>
   | C<"whitespace", WhitespaceToken>
-  | C<"plusSign", PlusSignToken>
-  | C<"minusSign", MinusSignToken>
+  | C<"addition", AdditionToken>
+  | C<"subtraction", SubtractionToken>
   | C<"leftParen", LeftParenToken>
   | C<"rightParen", RightParenToken>;
 
