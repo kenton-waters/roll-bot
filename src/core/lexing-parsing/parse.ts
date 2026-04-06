@@ -4,7 +4,9 @@ import type {
   DiceRoll,
   Expression,
   Integer,
+  LeftHandTerm,
   NumDice,
+  Parenthetical,
   Sign,
 } from "../../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../../models/lexing-parsing/parse-tree.js";
@@ -97,6 +99,17 @@ const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
       remainingTokens: parseAdditionOrSubtractionResult.remainingTokens,
     };
 
+  const parseParentheticalResult = parseParenthetical(tokens);
+  if (parseParentheticalResult.type === "success")
+    return {
+      type: "success",
+      parsedObject: {
+        type: "parenthetical",
+        ...parseParentheticalResult.parsedObject,
+      },
+      remainingTokens: parseParentheticalResult.remainingTokens,
+    };
+
   const parseAtomResult = parseAtom(tokens);
   switch (parseAtomResult.type) {
     case "failure":
@@ -113,18 +126,113 @@ const parseExpression = (tokens: Token[]): ParseResult<Expression> => {
   }
 };
 
+const parseParenthetical = (tokens: Token[]): ParseResult<Parenthetical> => {
+  if (tokens.length === 0) {
+    return {
+      type: "failure",
+      reason: "Tokens exhausted before attempting to parse '('.",
+      remainingTokens: tokens,
+    };
+  }
+
+  if (tokens[0]?.stringToken !== "(") {
+    return {
+      type: "failure",
+      reason: "Expected '(' not found.",
+      remainingTokens: tokens,
+    };
+  }
+
+  const {
+    parsedObject: postLeftParenWhitespace,
+    remainingTokens: postLeftParenTokens,
+  } = parseOptionalWhitespace(tokens.slice(1));
+
+  const parseInnerExpressionResult = parseExpression(postLeftParenTokens);
+  if (parseInnerExpressionResult.type !== "success")
+    return parseInnerExpressionResult;
+
+  if (parseInnerExpressionResult.remainingTokens.length === 0)
+    return {
+      type: "failure",
+      reason: "Tokens exhausted before attempting to parse ')'.",
+      remainingTokens: parseInnerExpressionResult.remainingTokens,
+    };
+
+  if (parseInnerExpressionResult.remainingTokens[0]?.stringToken !== ")") {
+    return {
+      type: "failure",
+      reason: "Expected ')' not found.",
+      remainingTokens: parseInnerExpressionResult.remainingTokens,
+    };
+  }
+
+  const {
+    parsedObject: postRightParenWhitespace,
+    remainingTokens: postRightParenTokens,
+  } = parseOptionalWhitespace(
+    parseInnerExpressionResult.remainingTokens.slice(1),
+  );
+
+  return {
+    type: "success",
+    parsedObject: {
+      leftParen: {
+        followingWhitespaceToken: postLeftParenWhitespace,
+        leftParenToken: { stringToken: "(" },
+      },
+      internalExpression: parseInnerExpressionResult.parsedObject,
+      rightParen: {
+        followingWhitespaceToken: postRightParenWhitespace,
+        rightParenToken: { stringToken: ")" },
+      },
+    },
+    remainingTokens: postRightParenTokens,
+  };
+};
+
+const parseLeftHandTerm = (tokens: Token[]): ParseResult<LeftHandTerm> => {
+  const parseParentheticalResult = parseParenthetical(tokens);
+  if (parseParentheticalResult.type === "success")
+    return {
+      type: "success",
+      parsedObject: {
+        type: "parenthetical",
+        ...parseParentheticalResult.parsedObject,
+      },
+      remainingTokens: parseParentheticalResult.remainingTokens,
+    };
+
+  const parseAtomResult = parseAtom(tokens);
+  if (parseAtomResult.type === "success")
+    return {
+      type: "success",
+      parsedObject: {
+        type: "atom",
+        data: parseAtomResult.parsedObject,
+      },
+      remainingTokens: parseAtomResult.remainingTokens,
+    };
+
+  return {
+    type: "failure",
+    reason: parseAtomResult.reason,
+    remainingTokens: parseAtomResult.remainingTokens,
+  };
+};
+
 const parseAdditionOrSubtraction = (
   tokens: Token[],
 ): ParseResult<AdditionOrSubtraction> => {
-  const parseLeftHandAtomResult = parseAtom(tokens);
+  const parseLeftHandTermResult = parseLeftHandTerm(tokens);
 
-  if (parseLeftHandAtomResult.type !== "success")
-    return parseLeftHandAtomResult;
+  if (parseLeftHandTermResult.type !== "success")
+    return parseLeftHandTermResult;
 
   const {
-    parsedObject: leftHandAtom,
+    parsedObject: leftHandTerm,
     remainingTokens: postLeftHandAtomTokens,
-  } = parseLeftHandAtomResult;
+  } = parseLeftHandTermResult;
 
   const nextToken = postLeftHandAtomTokens[0];
   if (nextToken?.type !== "plusSign" && nextToken?.type !== "minusSign")
@@ -149,7 +257,7 @@ const parseAdditionOrSubtraction = (
   return {
     type: "success",
     parsedObject: {
-      leftHandAtom,
+      leftHandTerm: leftHandTerm,
       operatorToken,
       followingWhitespaceToken: postOperatorWhitespaceToken,
       rightHandExpression: parseRightHandExpressionResult.parsedObject,

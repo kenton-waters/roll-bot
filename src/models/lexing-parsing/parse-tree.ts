@@ -1,9 +1,11 @@
 import type C from "../generic/discriminated-union-case.js";
 import type {
   DieToken,
+  LeftParenToken,
   MinusSignToken,
   NonnegativeIntegerToken,
   PlusSignToken,
+  RightParenToken,
   WhitespaceToken,
 } from "./token.js";
 
@@ -45,15 +47,32 @@ export interface DiceRoll extends Signed, WhitespaceFollowing {
 
 export type Atom = C<"integer", Integer> | C<"diceRoll", DiceRoll>;
 
+export type LeftHandTerm = C<"atom", Atom> | C<"parenthetical", Parenthetical>;
+
 export interface AdditionOrSubtraction extends WhitespaceFollowing {
-  readonly leftHandAtom: Atom;
+  readonly leftHandTerm: LeftHandTerm;
   readonly operatorToken: PlusSignToken | MinusSignToken;
   readonly rightHandExpression: Expression;
 }
 
+export interface LeftParen extends WhitespaceFollowing {
+  readonly leftParenToken: LeftParenToken;
+}
+
+export interface RightParen extends WhitespaceFollowing {
+  readonly rightParenToken: RightParenToken;
+}
+
+export interface Parenthetical {
+  readonly leftParen: LeftParen;
+  readonly internalExpression: Expression;
+  readonly rightParen: RightParen;
+}
+
 export type Expression =
   | C<"additionOrSubtraction", AdditionOrSubtraction>
-  | C<"atom", Atom>;
+  | C<"atom", Atom>
+  | C<"parenthetical", Parenthetical>;
 
 export default interface ParseTree {
   readonly initialWhitespaceToken: WhitespaceToken | null;

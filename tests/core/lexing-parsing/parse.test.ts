@@ -5,10 +5,13 @@ import type TokenizeResult from "../../../src/models/results/tokenize-result.js"
 import tokenize from "../../../src/core/lexing-parsing/tokenize.js";
 import parse from "../../../src/core/lexing-parsing/parse.js";
 import type Token from "../../../src/models/lexing-parsing/token.js";
-import { reconstructInputString } from "../../../src/util/tree-helpers.js";
+import {
+  evaluate,
+  reconstructInputString,
+} from "../../../src/util/tree-helpers.js";
 
 void describe("parse", () => {
-  void test("empty input; success", () => {
+  void test("empty input; failure", () => {
     // Arrange
     const inputString = "";
 
@@ -112,7 +115,7 @@ void describe("parse", () => {
     assert.strictEqual(parseResult.remainingTokens.length, 0);
   });
 
-  void test("two whitespace tokens; failure; tokens not exhausted", () => {
+  void test("two whitespace tokens; failure", () => {
     // Arrange
     const inputTokens: Token[] = [
       {
@@ -190,6 +193,141 @@ void describe("parse", () => {
       reconstructInputString(parseResult.parsedObject),
       inputString,
     );
+  });
+
+  void test("parenthetical integer; success", () => {
+    // Arrange
+    const inputString = " ( 3 ) ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.type, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(
+      parseResult.parsedObject.expression?.type,
+      "parenthetical",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.leftParen.followingWhitespaceToken
+        ?.stringToken,
+      " ",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.internalExpression.type,
+      "atom",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.internalExpression.data.type,
+      "integer",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.internalExpression.data.numericValue,
+      3,
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.internalExpression.data
+        .followingWhitespaceToken?.stringToken,
+      " ",
+    );
+    assert.strictEqual(
+      parseResult.parsedObject.expression.rightParen.followingWhitespaceToken
+        ?.stringToken,
+      " ",
+    );
+    assert.strictEqual(parseResult.remainingTokens.length, 0);
+    assert.strictEqual(
+      reconstructInputString(parseResult.parsedObject),
+      inputString,
+    );
+  });
+
+  void test("parenthetical then addition; success", () => {
+    // Arrange
+    const inputString = " ( 3 ) + 2";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.type, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(
+      reconstructInputString(parseResult.parsedObject),
+      inputString,
+    );
+    assert.strictEqual(evaluate(parseResult.parsedObject), 5);
+  });
+
+  void test("(1-2)-3; -4", () => {
+    // Arrange
+    const inputString = "(1-2)-3";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.type, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(
+      reconstructInputString(parseResult.parsedObject),
+      inputString,
+    );
+    assert.strictEqual(evaluate(parseResult.parsedObject), -4);
+  });
+
+  void test("1-(2-3); -4", () => {
+    // Arrange
+    const inputString = " 1 - ( 2 - 3  )  ";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    assert.strictEqual(tokenizeResult.type, "success");
+
+    const parseResult = parse({
+      tokens: tokenizeResult,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(parseResult.type, "success");
+    assert.strictEqual(
+      reconstructInputString(parseResult.parsedObject),
+      inputString,
+    );
+    assert.strictEqual(evaluate(parseResult.parsedObject), 2);
   });
 
   void test("negative integer; success", () => {

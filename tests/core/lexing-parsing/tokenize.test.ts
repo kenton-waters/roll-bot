@@ -154,4 +154,38 @@ void describe("tokenize", () => {
     assert.strictEqual(tokenizeResult[7]?.type, "minusSign");
     assert.strictEqual(tokenizeResult[7].stringToken, "-");
   });
+
+  void test("left parenthesis input; success", () => {
+    // Arrange
+    const inputString = "(";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.type, "success");
+    assert.strictEqual(tokenizeResult.length, 1);
+    assert.strictEqual(tokenizeResult[0]?.type, "leftParen");
+    assert.strictEqual(tokenizeResult[0].stringToken, "(");
+  });
+
+  void test("right parenthesis input; success", () => {
+    // Arrange
+    const inputString = ")";
+
+    // Act
+    const tokenizeResult: TokenizeResult = tokenize({
+      inputString: inputString,
+      deps: { prevLogger: nullLogger },
+    });
+
+    // Assert
+    assert.strictEqual(tokenizeResult.type, "success");
+    assert.strictEqual(tokenizeResult.length, 1);
+    assert.strictEqual(tokenizeResult[0]?.type, "rightParen");
+    assert.strictEqual(tokenizeResult[0].stringToken, ")");
+  });
 });

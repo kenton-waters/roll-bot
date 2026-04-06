@@ -4,6 +4,8 @@ import type {
   DiceRoll,
   Expression,
   Integer,
+  LeftHandTerm,
+  Parenthetical,
   Sign,
 } from "../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../models/lexing-parsing/parse-tree.js";
@@ -42,13 +44,27 @@ export const evaluate = (parseTree: ParseTree): number => {
         return evaluateAtom(expression.data);
       case "additionOrSubtraction":
         return evaluateAdditionOrSubtraction(expression);
+      case "parenthetical": {
+        return evaluateExpression(expression.internalExpression);
+      }
+    }
+  };
+
+  const evaluateLeftHandTerm = (leftHandTerm: LeftHandTerm): number => {
+    switch (leftHandTerm.type) {
+      case "atom":
+        return evaluateAtom(leftHandTerm.data);
+      case "parenthetical":
+        return evaluateExpression(leftHandTerm.internalExpression);
     }
   };
 
   const evaluateAdditionOrSubtraction = (
     additionOrSubtraction: AdditionOrSubtraction,
   ): number => {
-    const leftSide: number = evaluateAtom(additionOrSubtraction.leftHandAtom);
+    const leftSide: number = evaluateLeftHandTerm(
+      additionOrSubtraction.leftHandTerm,
+    );
     const rightSide: number = evaluateExpression(
       additionOrSubtraction.rightHandExpression,
     );
@@ -64,29 +80,32 @@ export const evaluate = (parseTree: ParseTree): number => {
       case "integer":
         // 1d20 + integer atom
         return evaluateAdditionOrSubtraction({
-          leftHandAtom: {
-            type: "diceRoll",
-            sign: {
-              signValue: "+",
-              signToken: null,
-              followingWhitespaceToken: null,
-            },
-            numDice: {
-              nonnegativeNumDiceToken: null,
-              numericValue: 1,
-              followingWhitespaceToken: null,
-            },
-            dieSymbol: {
-              dieToken: {
-                stringToken: "d",
+          leftHandTerm: {
+            type: "atom",
+            data: {
+              type: "diceRoll",
+              sign: {
+                signValue: "+",
+                signToken: null,
+                followingWhitespaceToken: null,
+              },
+              numDice: {
+                nonnegativeNumDiceToken: null,
+                numericValue: 1,
+                followingWhitespaceToken: null,
+              },
+              dieSymbol: {
+                dieToken: {
+                  stringToken: "d",
+                },
+                followingWhitespaceToken: null,
+              },
+              positiveNumFacesToken: {
+                numericValue: 20,
+                stringToken: "",
               },
               followingWhitespaceToken: null,
             },
-            positiveNumFacesToken: {
-              numericValue: 20,
-              stringToken: "",
-            },
-            followingWhitespaceToken: null,
           },
           operatorToken: {
             stringToken: "+",
@@ -105,6 +124,8 @@ export const evaluate = (parseTree: ParseTree): number => {
       return evaluateAdditionOrSubtraction(parseTree.expression);
     case "atom":
       return evaluateSingleAtom(parseTree.expression.data);
+    case "parenthetical":
+      return evaluateExpression(parseTree.expression.internalExpression);
     case undefined:
       // 1d20 + 0
       return evaluateSingleAtom({
@@ -141,6 +162,36 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
         return reconstructAdditionOrSubtractionInputString(expression);
       case "atom":
         return reconstructAtomInputString(expression.data);
+      case "parenthetical": {
+        return reconstructParentheticalInputString(expression);
+      }
+    }
+  };
+
+  const reconstructParentheticalInputString = (
+    parenthetical: Parenthetical,
+  ): string => {
+    return (
+      parenthetical.leftParen.leftParenToken.stringToken +
+      reconstructWhitespaceInputString(
+        parenthetical.leftParen.followingWhitespaceToken,
+      ) +
+      reconstructExpressionInputString(parenthetical.internalExpression) +
+      parenthetical.rightParen.rightParenToken.stringToken +
+      reconstructWhitespaceInputString(
+        parenthetical.rightParen.followingWhitespaceToken,
+      )
+    );
+  };
+
+  const reconstructLeftHandTermInputString = (
+    leftHandTerm: LeftHandTerm,
+  ): string => {
+    switch (leftHandTerm.type) {
+      case "atom":
+        return reconstructAtomInputString(leftHandTerm.data);
+      case "parenthetical":
+        return reconstructParentheticalInputString(leftHandTerm);
     }
   };
 
@@ -148,7 +199,7 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
     additionOrSubtraction: AdditionOrSubtraction,
   ): string => {
     return (
-      reconstructAtomInputString(additionOrSubtraction.leftHandAtom) +
+      reconstructLeftHandTermInputString(additionOrSubtraction.leftHandTerm) +
       additionOrSubtraction.operatorToken.stringToken +
       reconstructWhitespaceInputString(
         additionOrSubtraction.followingWhitespaceToken,
