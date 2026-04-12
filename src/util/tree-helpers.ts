@@ -4,7 +4,7 @@ import type {
   DiceRoll,
   Expression,
   Integer,
-  LeftHandTerm,
+  AdditiveTerm,
   Parenthetical,
   Sign,
 } from "../models/lexing-parsing/parse-tree.js";
@@ -50,7 +50,7 @@ export const evaluate = (parseTree: ParseTree): number => {
     }
   };
 
-  const evaluateLeftHandTerm = (leftHandTerm: LeftHandTerm): number => {
+  const evaluateRightHandTerm = (leftHandTerm: AdditiveTerm): number => {
     switch (leftHandTerm.type) {
       case "atom":
         return evaluateAtom(leftHandTerm.data);
@@ -62,11 +62,11 @@ export const evaluate = (parseTree: ParseTree): number => {
   const evaluateAdditionOrSubtraction = (
     additionOrSubtraction: AdditionOrSubtraction,
   ): number => {
-    const leftSide: number = evaluateLeftHandTerm(
-      additionOrSubtraction.leftHandTerm,
+    const leftSide: number = evaluateExpression(
+      additionOrSubtraction.leftHandExpression,
     );
-    const rightSide: number = evaluateExpression(
-      additionOrSubtraction.rightHandExpression,
+    const rightSide: number = evaluateRightHandTerm(
+      additionOrSubtraction.rightHandTerm,
     );
     return additionOrSubtraction.operatorToken.stringToken === "-"
       ? leftSide - rightSide
@@ -80,7 +80,7 @@ export const evaluate = (parseTree: ParseTree): number => {
       case "integer":
         // 1d20 + integer atom
         return evaluateAdditionOrSubtraction({
-          leftHandTerm: {
+          rightHandTerm: {
             type: "atom",
             data: {
               type: "diceRoll",
@@ -110,7 +110,7 @@ export const evaluate = (parseTree: ParseTree): number => {
           operatorToken: {
             stringToken: "+",
           },
-          rightHandExpression: {
+          leftHandExpression: {
             type: "atom",
             data: atom,
           },
@@ -184,8 +184,8 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
     );
   };
 
-  const reconstructLeftHandTermInputString = (
-    leftHandTerm: LeftHandTerm,
+  const reconstructRightHandTermInputString = (
+    leftHandTerm: AdditiveTerm,
   ): string => {
     switch (leftHandTerm.type) {
       case "atom":
@@ -199,14 +199,14 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
     additionOrSubtraction: AdditionOrSubtraction,
   ): string => {
     return (
-      reconstructLeftHandTermInputString(additionOrSubtraction.leftHandTerm) +
+      reconstructExpressionInputString(
+        additionOrSubtraction.leftHandExpression,
+      ) +
       additionOrSubtraction.operatorToken.stringToken +
       reconstructWhitespaceInputString(
         additionOrSubtraction.followingWhitespaceToken,
       ) +
-      reconstructExpressionInputString(
-        additionOrSubtraction.rightHandExpression,
-      )
+      reconstructRightHandTermInputString(additionOrSubtraction.rightHandTerm)
     );
   };
 

@@ -4,7 +4,7 @@ import type {
   DiceRoll,
   Expression,
   Integer,
-  LeftHandTerm,
+  AdditiveTerm,
   NumDice,
   Parenthetical,
   Sign,
@@ -191,7 +191,7 @@ const parseParenthetical = (tokens: Token[]): ParseResult<Parenthetical> => {
   };
 };
 
-const parseLeftHandTerm = (tokens: Token[]): ParseResult<LeftHandTerm> => {
+const parseAdditiveTerm = (tokens: Token[]): ParseResult<AdditiveTerm> => {
   const parseParentheticalResult = parseParenthetical(tokens);
   if (parseParentheticalResult.type === "success")
     return {
@@ -224,46 +224,62 @@ const parseLeftHandTerm = (tokens: Token[]): ParseResult<LeftHandTerm> => {
 const parseAdditionOrSubtraction = (
   tokens: Token[],
 ): ParseResult<AdditionOrSubtraction> => {
-  const parseLeftHandTermResult = parseLeftHandTerm(tokens);
+  const go = (
+    leftHandExpression: Expression,
+    tokens: Token[],
+  ): ParseResult<AdditionOrSubtraction> => {
+    if (tokens[0]?.type !== "addition" && tokens[0]?.type !== "subtraction")
+      return {
+        type: "failure",
+        reason:
+          "Expected '+' or '-' not found while parsing addition or subtraction expression.",
+        remainingTokens: tokens,
+      };
+
+    const operatorToken = tokens[0];
+
+    const {
+      parsedObject: postOperatorWhitespaceToken,
+      remainingTokens: postOperatorTokens,
+    } = parseOptionalWhitespace(tokens.slice(1));
+
+    const parseRightHandTermResult = parseAdditiveTerm(postOperatorTokens);
+
+    if (parseRightHandTermResult.type !== "success")
+      return parseRightHandTermResult;
+
+    const parsedAdditionOrSubtraction = {
+      type: "additionOrSubtraction",
+      leftHandExpression: leftHandExpression,
+      operatorToken,
+      followingWhitespaceToken: postOperatorWhitespaceToken,
+      rightHandTerm: parseRightHandTermResult.parsedObject,
+    } as const;
+
+    const parseAnotherAdditionOrSubtractionResult = go(
+      parsedAdditionOrSubtraction,
+      parseRightHandTermResult.remainingTokens,
+    );
+
+    if (parseAnotherAdditionOrSubtractionResult.type === "success")
+      return parseAnotherAdditionOrSubtractionResult;
+
+    return {
+      type: "success",
+      parsedObject: parsedAdditionOrSubtraction,
+      remainingTokens: parseRightHandTermResult.remainingTokens,
+    };
+  };
+
+  const parseLeftHandTermResult = parseAdditiveTerm(tokens);
 
   if (parseLeftHandTermResult.type !== "success")
     return parseLeftHandTermResult;
 
-  const {
-    parsedObject: leftHandTerm,
-    remainingTokens: postLeftHandAtomTokens,
-  } = parseLeftHandTermResult;
-
-  const nextToken = postLeftHandAtomTokens[0];
-  if (nextToken?.type !== "addition" && nextToken?.type !== "subtraction")
-    return {
-      type: "failure",
-      reason:
-        "Expected '+' or '-' not found while parsing addition or subtraction expression.",
-      remainingTokens: postLeftHandAtomTokens,
-    };
-
-  const operatorToken = nextToken;
-
-  const {
-    parsedObject: postOperatorWhitespaceToken,
-    remainingTokens: postOperatorTokens,
-  } = parseOptionalWhitespace(postLeftHandAtomTokens.slice(1));
-
-  const parseRightHandExpressionResult = parseExpression(postOperatorTokens);
-  if (parseRightHandExpressionResult.type !== "success")
-    return parseRightHandExpressionResult;
-
-  return {
-    type: "success",
-    parsedObject: {
-      leftHandTerm: leftHandTerm,
-      operatorToken,
-      followingWhitespaceToken: postOperatorWhitespaceToken,
-      rightHandExpression: parseRightHandExpressionResult.parsedObject,
-    },
-    remainingTokens: parseRightHandExpressionResult.remainingTokens,
-  };
+  return go(
+    parseLeftHandTermResult.parsedObject,
+    parseLeftHandTermResult.remainingTokens,
+  );
 };
 
 const parseAtom = (tokens: Token[]): ParseResult<Atom> => {
