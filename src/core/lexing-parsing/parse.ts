@@ -8,6 +8,7 @@ import type {
   NumDice,
   Parenthetical,
   Sign,
+  LeftHandAdditiveExpression,
 } from "../../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../../models/lexing-parsing/parse-tree.js";
 import type { WhitespaceToken } from "../../models/lexing-parsing/token.js";
@@ -225,7 +226,7 @@ const parseAdditionOrSubtraction = (
   tokens: Token[],
 ): ParseResult<AdditionOrSubtraction> => {
   const go = (
-    leftHandExpression: Expression,
+    leftHandExpression: LeftHandAdditiveExpression,
     tokens: Token[],
   ): ParseResult<AdditionOrSubtraction> => {
     if (tokens[0]?.type !== "addition" && tokens[0]?.type !== "subtraction")
@@ -277,7 +278,10 @@ const parseAdditionOrSubtraction = (
     return parseLeftHandTermResult;
 
   return go(
-    parseLeftHandTermResult.parsedObject,
+    {
+      type: "firstAdditiveTerm",
+      data: parseLeftHandTermResult.parsedObject,
+    },
     parseLeftHandTermResult.remainingTokens,
   );
 };

@@ -7,6 +7,8 @@ import type {
   AdditionToken,
   RightParenToken,
   WhitespaceToken,
+  MultiplicationToken,
+  DivisionToken,
 } from "./token.js";
 
 interface WhitespaceFollowing {
@@ -46,14 +48,26 @@ export interface DiceRoll extends Signed, WhitespaceFollowing {
 }
 
 export type Atom = C<"integer", Integer> | C<"diceRoll", DiceRoll>;
+type AtomTagged = C<"atom", Atom>;
 
-export type AdditiveTerm = C<"atom", Atom> | C<"parenthetical", Parenthetical>;
+export type AdditiveTerm =
+  | AtomTagged
+  | ParentheticalTagged
+  | MultiplicationOrDivisionTagged;
+
+export type LeftHandAdditiveExpression =
+  | AdditionOrSubtractionTagged
+  | C<"firstAdditiveTerm", AdditiveTerm>;
 
 export interface AdditionOrSubtraction extends WhitespaceFollowing {
-  readonly leftHandExpression: Expression;
+  readonly leftHandExpression: LeftHandAdditiveExpression;
   readonly operatorToken: AdditionToken | SubtractionToken;
   readonly rightHandTerm: AdditiveTerm;
 }
+type AdditionOrSubtractionTagged = C<
+  "additionOrSubtraction",
+  AdditionOrSubtraction
+>;
 
 export interface LeftParen extends WhitespaceFollowing {
   readonly leftParenToken: LeftParenToken;
@@ -68,11 +82,43 @@ export interface Parenthetical {
   readonly internalExpression: Expression;
   readonly rightParen: RightParen;
 }
+type ParentheticalTagged = C<"parenthetical", Parenthetical>;
+
+export type MultiplicativeTerm = AtomTagged | ParentheticalTagged;
+
+export interface ExplicitMultiplicationOrDivision extends WhitespaceFollowing {
+  readonly leftHandExpression:
+    | MultiplicationOrDivisionTagged
+    | C<"firstMultiplicativeTerm", MultiplicativeTerm>;
+  readonly operatorToken: MultiplicationToken | DivisionToken;
+  readonly rightHandTerm: MultiplicativeTerm;
+}
+
+export interface ImplicitMultiplicationLeft {
+  readonly leftHandParenthetical: Parenthetical;
+  readonly rightHandTerm: MultiplicativeTerm;
+}
+export interface ImplicitMultiplicationRight {
+  readonly leftHandTerm: MultiplicativeTerm;
+  readonly rightHandParenthetical: Parenthetical;
+}
+export type ImplicitMultiplication =
+  | C<"implicitMultiplicationLeft", ImplicitMultiplicationLeft>
+  | C<"implicitMultiplicationRight", ImplicitMultiplicationRight>;
+
+export type MultiplicationOrDivision =
+  | C<"explicitMultiplicationOrDivision", ExplicitMultiplicationOrDivision>
+  | C<"implicitMultiplication", ImplicitMultiplication>;
+type MultiplicationOrDivisionTagged = C<
+  "multiplicationOrDivision",
+  MultiplicationOrDivision
+>;
 
 export type Expression =
-  | C<"additionOrSubtraction", AdditionOrSubtraction>
-  | C<"atom", Atom>
-  | C<"parenthetical", Parenthetical>;
+  | AdditionOrSubtractionTagged
+  | MultiplicationOrDivisionTagged
+  | AtomTagged
+  | ParentheticalTagged;
 
 export default interface ParseTree {
   readonly initialWhitespaceToken: WhitespaceToken | null;

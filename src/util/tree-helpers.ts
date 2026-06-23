@@ -7,6 +7,10 @@ import type {
   AdditiveTerm,
   Parenthetical,
   Sign,
+  MultiplicationOrDivision,
+  ExplicitMultiplicationOrDivision,
+  MultiplicativeTerm,
+  ImplicitMultiplication,
 } from "../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../models/lexing-parsing/parse-tree.js";
 import type { WhitespaceToken } from "../models/lexing-parsing/token.js";
@@ -38,34 +42,112 @@ export const evaluate = (parseTree: ParseTree): number => {
     }
   };
 
+  const evaluateMultiplicativeTerm = (
+    multiplicativeTerm: MultiplicativeTerm,
+  ): number => {
+    switch (multiplicativeTerm.type) {
+      case "atom":
+        return evaluateAtom(multiplicativeTerm.data);
+      case "parenthetical":
+        return evaluateExpression(multiplicativeTerm.internalExpression);
+    }
+  };
+
+  const evaluateExplicitMultiplicationOrDivision = (
+    explicitMultiplicationOrDivision: ExplicitMultiplicationOrDivision,
+  ): number => {
+    const leftHandValue: number =
+      explicitMultiplicationOrDivision.leftHandExpression.type ===
+      "multiplicationOrDivision"
+        ? evaluateMultiplicationOrDivision(
+            explicitMultiplicationOrDivision.leftHandExpression.data,
+          )
+        : evaluateMultiplicativeTerm(
+            explicitMultiplicationOrDivision.leftHandExpression.data,
+          );
+    const rightHandValue: number = evaluateMultiplicativeTerm(
+      explicitMultiplicationOrDivision.rightHandTerm,
+    );
+
+    switch (explicitMultiplicationOrDivision.operatorToken.stringToken) {
+      case "*":
+        return leftHandValue * rightHandValue;
+      case "/":
+        return leftHandValue / rightHandValue;
+    }
+  };
+
+  const evaluateImplicitMultiplication = (
+    implicitMultiplication: ImplicitMultiplication,
+  ): number => {
+    const leftHandValue: number =
+      implicitMultiplication.type === "implicitMultiplicationLeft"
+        ? evaluateExpression(
+            implicitMultiplication.leftHandParenthetical.internalExpression,
+          )
+        : evaluateMultiplicativeTerm(implicitMultiplication.leftHandTerm);
+    const rightHandValue: number =
+      implicitMultiplication.type === "implicitMultiplicationLeft"
+        ? evaluateMultiplicativeTerm(implicitMultiplication.rightHandTerm)
+        : evaluateExpression(
+            implicitMultiplication.rightHandParenthetical.internalExpression,
+          );
+    return leftHandValue * rightHandValue;
+  };
+
+  const evaluateMultiplicationOrDivision = (
+    multiplicationOrDivision: MultiplicationOrDivision,
+  ): number => {
+    switch (multiplicationOrDivision.type) {
+      case "explicitMultiplicationOrDivision":
+        return evaluateExplicitMultiplicationOrDivision(
+          multiplicationOrDivision,
+        );
+      case "implicitMultiplication":
+        return evaluateImplicitMultiplication(multiplicationOrDivision.data);
+    }
+  };
+
   const evaluateExpression = (expression: Expression): number => {
     switch (expression.type) {
       case "atom":
         return evaluateAtom(expression.data);
       case "additionOrSubtraction":
         return evaluateAdditionOrSubtraction(expression);
-      case "parenthetical": {
+      case "parenthetical":
         return evaluateExpression(expression.internalExpression);
-      }
+      case "multiplicationOrDivision":
+        return evaluateMultiplicationOrDivision(expression.data);
     }
   };
 
-  const evaluateRightHandTerm = (leftHandTerm: AdditiveTerm): number => {
-    switch (leftHandTerm.type) {
+  const evaluateAdditiveTerm = (additiveTerm: AdditiveTerm): number => {
+    switch (additiveTerm.type) {
       case "atom":
-        return evaluateAtom(leftHandTerm.data);
+        return evaluateAtom(additiveTerm.data);
       case "parenthetical":
-        return evaluateExpression(leftHandTerm.internalExpression);
+        return evaluateExpression(additiveTerm.internalExpression);
+      case "multiplicationOrDivision":
+        return evaluateMultiplicationOrDivision(additiveTerm.data);
     }
   };
 
   const evaluateAdditionOrSubtraction = (
     additionOrSubtraction: AdditionOrSubtraction,
   ): number => {
-    const leftSide: number = evaluateExpression(
-      additionOrSubtraction.leftHandExpression,
-    );
-    const rightSide: number = evaluateRightHandTerm(
+    const leftSide: number = (() => {
+      switch (additionOrSubtraction.leftHandExpression.type) {
+        case "additionOrSubtraction":
+          return evaluateAdditionOrSubtraction(
+            additionOrSubtraction.leftHandExpression,
+          );
+        case "firstAdditiveTerm":
+          return evaluateAdditiveTerm(
+            additionOrSubtraction.leftHandExpression.data,
+          );
+      }
+    })();
+    const rightSide: number = evaluateAdditiveTerm(
       additionOrSubtraction.rightHandTerm,
     );
     return additionOrSubtraction.operatorToken.stringToken === "-"
@@ -80,6 +162,17 @@ export const evaluate = (parseTree: ParseTree): number => {
       case "integer":
         // 1d20 + integer atom
         return evaluateAdditionOrSubtraction({
+          leftHandExpression: {
+            type: "firstAdditiveTerm",
+            data: {
+              type: "atom",
+              data: atom,
+            },
+          },
+          operatorToken: {
+            stringToken: "+",
+          },
+          followingWhitespaceToken: null,
           rightHandTerm: {
             type: "atom",
             data: {
@@ -107,14 +200,6 @@ export const evaluate = (parseTree: ParseTree): number => {
               followingWhitespaceToken: null,
             },
           },
-          operatorToken: {
-            stringToken: "+",
-          },
-          leftHandExpression: {
-            type: "atom",
-            data: atom,
-          },
-          followingWhitespaceToken: null,
         });
     }
   };
@@ -126,6 +211,8 @@ export const evaluate = (parseTree: ParseTree): number => {
       return evaluateSingleAtom(parseTree.expression.data);
     case "parenthetical":
       return evaluateExpression(parseTree.expression.internalExpression);
+    case "multiplicationOrDivision":
+      return evaluateMultiplicationOrDivision(parseTree.expression.data);
     case undefined:
       // 1d20 + 0
       return evaluateSingleAtom({
@@ -162,9 +249,88 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
         return reconstructAdditionOrSubtractionInputString(expression);
       case "atom":
         return reconstructAtomInputString(expression.data);
-      case "parenthetical": {
+      case "parenthetical":
         return reconstructParentheticalInputString(expression);
+      case "multiplicationOrDivision":
+        return reconstructMultiplicationOrDivisionInputString(expression.data);
+    }
+  };
+
+  const reconstructMultiplicationOrDivisionInputString = (
+    multiplicationOrDivision: MultiplicationOrDivision,
+  ): string => {
+    switch (multiplicationOrDivision.type) {
+      case "explicitMultiplicationOrDivision":
+        return reconstructExplicitMultiplicationOrDivisionInputString(
+          multiplicationOrDivision,
+        );
+      case "implicitMultiplication":
+        return reconstructImplicitMultiplicationInputString(
+          multiplicationOrDivision.data,
+        );
+    }
+  };
+
+  const reconstructImplicitMultiplicationInputString = (
+    implicitMultiplication: ImplicitMultiplication,
+  ): string => {
+    switch (implicitMultiplication.type) {
+      case "implicitMultiplicationLeft":
+        return (
+          reconstructParentheticalInputString(
+            implicitMultiplication.leftHandParenthetical,
+          ) +
+          reconstructMultiplicativeTermInputString(
+            implicitMultiplication.rightHandTerm,
+          )
+        );
+      case "implicitMultiplicationRight":
+        return (
+          reconstructMultiplicativeTermInputString(
+            implicitMultiplication.leftHandTerm,
+          ) +
+          reconstructParentheticalInputString(
+            implicitMultiplication.rightHandParenthetical,
+          )
+        );
+    }
+  };
+
+  const reconstructExplicitMultiplicationOrDivisionInputString = (
+    explicitMultiplicationOrDivision: ExplicitMultiplicationOrDivision,
+  ): string => {
+    const leftSide: string = (() => {
+      switch (explicitMultiplicationOrDivision.leftHandExpression.type) {
+        case "multiplicationOrDivision":
+          return reconstructMultiplicationOrDivisionInputString(
+            explicitMultiplicationOrDivision.leftHandExpression.data,
+          );
+        case "firstMultiplicativeTerm":
+          return reconstructMultiplicativeTermInputString(
+            explicitMultiplicationOrDivision.leftHandExpression.data,
+          );
       }
+    })();
+    return (
+      leftSide +
+      explicitMultiplicationOrDivision.operatorToken.stringToken +
+      reconstructWhitespaceInputString(
+        explicitMultiplicationOrDivision.followingWhitespaceToken,
+      ) +
+      reconstructMultiplicativeTermInputString(
+        explicitMultiplicationOrDivision.rightHandTerm,
+      )
+    );
+  };
+
+  const reconstructMultiplicativeTermInputString = (
+    multiplicativeTerm: MultiplicativeTerm,
+  ): string => {
+    switch (multiplicativeTerm.type) {
+      case "atom":
+        return reconstructAtomInputString(multiplicativeTerm.data);
+      case "parenthetical":
+        return reconstructParentheticalInputString(multiplicativeTerm);
     }
   };
 
@@ -184,14 +350,18 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
     );
   };
 
-  const reconstructRightHandTermInputString = (
-    leftHandTerm: AdditiveTerm,
+  const reconstructAdditiveTermInputString = (
+    additiveTerm: AdditiveTerm,
   ): string => {
-    switch (leftHandTerm.type) {
+    switch (additiveTerm.type) {
       case "atom":
-        return reconstructAtomInputString(leftHandTerm.data);
+        return reconstructAtomInputString(additiveTerm.data);
       case "parenthetical":
-        return reconstructParentheticalInputString(leftHandTerm);
+        return reconstructParentheticalInputString(additiveTerm);
+      case "multiplicationOrDivision":
+        return reconstructMultiplicationOrDivisionInputString(
+          additiveTerm.data,
+        );
     }
   };
 
@@ -199,14 +369,23 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
     additionOrSubtraction: AdditionOrSubtraction,
   ): string => {
     return (
-      reconstructExpressionInputString(
-        additionOrSubtraction.leftHandExpression,
-      ) +
+      (() => {
+        switch (additionOrSubtraction.leftHandExpression.type) {
+          case "additionOrSubtraction":
+            return reconstructAdditionOrSubtractionInputString(
+              additionOrSubtraction.leftHandExpression,
+            );
+          case "firstAdditiveTerm":
+            return reconstructAdditiveTermInputString(
+              additionOrSubtraction.leftHandExpression.data,
+            );
+        }
+      })() +
       additionOrSubtraction.operatorToken.stringToken +
       reconstructWhitespaceInputString(
         additionOrSubtraction.followingWhitespaceToken,
       ) +
-      reconstructRightHandTermInputString(additionOrSubtraction.rightHandTerm)
+      reconstructAdditiveTermInputString(additionOrSubtraction.rightHandTerm)
     );
   };
 
