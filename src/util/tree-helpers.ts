@@ -11,6 +11,7 @@ import type {
   ExplicitMultiplicationOrDivision,
   MultiplicativeTerm,
   ImplicitMultiplication,
+  LeftHandMultiplicativeExpression,
 } from "../models/lexing-parsing/parse-tree.js";
 import type ParseTree from "../models/lexing-parsing/parse-tree.js";
 import type { WhitespaceToken } from "../models/lexing-parsing/token.js";
@@ -53,18 +54,27 @@ export const evaluate = (parseTree: ParseTree): number => {
     }
   };
 
+  const evaluateLeftHandMultiplicativeExpression = (
+    leftHandMultiplicativeExpression: LeftHandMultiplicativeExpression,
+  ): number => {
+    switch (leftHandMultiplicativeExpression.type) {
+      case "multiplicationOrDivision":
+        return evaluateMultiplicationOrDivision(
+          leftHandMultiplicativeExpression.data,
+        );
+      case "firstMultiplicativeTerm":
+        return evaluateMultiplicativeTerm(
+          leftHandMultiplicativeExpression.data,
+        );
+    }
+  };
+
   const evaluateExplicitMultiplicationOrDivision = (
     explicitMultiplicationOrDivision: ExplicitMultiplicationOrDivision,
   ): number => {
-    const leftHandValue: number =
-      explicitMultiplicationOrDivision.leftHandExpression.type ===
-      "multiplicationOrDivision"
-        ? evaluateMultiplicationOrDivision(
-            explicitMultiplicationOrDivision.leftHandExpression.data,
-          )
-        : evaluateMultiplicativeTerm(
-            explicitMultiplicationOrDivision.leftHandExpression.data,
-          );
+    const leftHandValue: number = evaluateLeftHandMultiplicativeExpression(
+      explicitMultiplicationOrDivision.leftHandExpression,
+    );
     const rightHandValue: number = evaluateMultiplicativeTerm(
       explicitMultiplicationOrDivision.rightHandTerm,
     );
@@ -85,7 +95,9 @@ export const evaluate = (parseTree: ParseTree): number => {
         ? evaluateExpression(
             implicitMultiplication.leftHandParenthetical.internalExpression,
           )
-        : evaluateMultiplicativeTerm(implicitMultiplication.leftHandTerm);
+        : evaluateLeftHandMultiplicativeExpression(
+            implicitMultiplication.leftHandExpression,
+          );
     const rightHandValue: number =
       implicitMultiplication.type === "implicitMultiplicationLeft"
         ? evaluateMultiplicativeTerm(implicitMultiplication.rightHandTerm)
@@ -286,8 +298,8 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
         );
       case "implicitMultiplicationRight":
         return (
-          reconstructMultiplicativeTermInputString(
-            implicitMultiplication.leftHandTerm,
+          reconstructLeftHandMultiplicativeExpression(
+            implicitMultiplication.leftHandExpression,
           ) +
           reconstructParentheticalInputString(
             implicitMultiplication.rightHandParenthetical,
@@ -296,21 +308,27 @@ export const reconstructInputString = (parseTree: ParseTree): string => {
     }
   };
 
+  const reconstructLeftHandMultiplicativeExpression = (
+    leftHandMultiplicativeExpression: LeftHandMultiplicativeExpression,
+  ): string => {
+    switch (leftHandMultiplicativeExpression.type) {
+      case "multiplicationOrDivision":
+        return reconstructMultiplicationOrDivisionInputString(
+          leftHandMultiplicativeExpression.data,
+        );
+      case "firstMultiplicativeTerm":
+        return reconstructMultiplicativeTermInputString(
+          leftHandMultiplicativeExpression.data,
+        );
+    }
+  };
+
   const reconstructExplicitMultiplicationOrDivisionInputString = (
     explicitMultiplicationOrDivision: ExplicitMultiplicationOrDivision,
   ): string => {
-    const leftSide: string = (() => {
-      switch (explicitMultiplicationOrDivision.leftHandExpression.type) {
-        case "multiplicationOrDivision":
-          return reconstructMultiplicationOrDivisionInputString(
-            explicitMultiplicationOrDivision.leftHandExpression.data,
-          );
-        case "firstMultiplicativeTerm":
-          return reconstructMultiplicativeTermInputString(
-            explicitMultiplicationOrDivision.leftHandExpression.data,
-          );
-      }
-    })();
+    const leftSide: string = reconstructLeftHandMultiplicativeExpression(
+      explicitMultiplicationOrDivision.leftHandExpression,
+    );
     return (
       leftSide +
       explicitMultiplicationOrDivision.operatorToken.stringToken +

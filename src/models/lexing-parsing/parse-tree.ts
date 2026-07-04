@@ -86,10 +86,12 @@ type ParentheticalTagged = C<"parenthetical", Parenthetical>;
 
 export type MultiplicativeTerm = AtomTagged | ParentheticalTagged;
 
+export type LeftHandMultiplicativeExpression =
+  | MultiplicationOrDivisionTagged
+  | C<"firstMultiplicativeTerm", MultiplicativeTerm>;
+
 export interface ExplicitMultiplicationOrDivision extends WhitespaceFollowing {
-  readonly leftHandExpression:
-    | MultiplicationOrDivisionTagged
-    | C<"firstMultiplicativeTerm", MultiplicativeTerm>;
+  readonly leftHandExpression: LeftHandMultiplicativeExpression;
   readonly operatorToken: MultiplicationToken | DivisionToken;
   readonly rightHandTerm: MultiplicativeTerm;
 }
@@ -99,7 +101,7 @@ export interface ImplicitMultiplicationLeft {
   readonly rightHandTerm: MultiplicativeTerm;
 }
 export interface ImplicitMultiplicationRight {
-  readonly leftHandTerm: MultiplicativeTerm;
+  readonly leftHandExpression: LeftHandMultiplicativeExpression;
   readonly rightHandParenthetical: Parenthetical;
 }
 export type ImplicitMultiplication =
